@@ -1,0 +1,57 @@
+#version: '2.4'
+
+networks:
+  net4:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+  net6:
+    enable_ipv6: true
+    driver: bridge
+    ipam:
+      config:
+        - subnet: fc00::/64
+services:
+  postgres:
+    container_name: campfire_postgres
+    image: postgres:14
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - /c/Users/bmadi/Desktop/Projet_final-stage/projet/Campfire/backend/pgdbfiles:/var/lib/postgresql/data
+    networks:
+      net4:
+        ipv4_address: 172.18.208.1
+      net6:
+        ipv6_address: fc00::3
+    environment:
+      ENABLE_IPV6: 'true'
+      POSTGRES_PASSWORD: "4336.Bmadi?@1"
+      TZ: 'Europe/Paris'
+      PGTZ: 'Europe/Paris'
+
+  campfire:
+    image: "ank-node22"
+    container_name: campfire_backend
+    restart: always
+    ports:
+      - "4000:4000"
+    working_dir: /app
+    volumes:
+      - ./backend/app:/app
+      - ./backend/logs:/var/log/campfire
+    environment:
+      - ENABLE_IPV6='true'
+      - NODE_ENV=production
+      - VIRTUAL_HOST=campfire.rpgservices.eu
+      - VIRTUAL_PROTO=https
+      - VIRTUAL_PORT=8082
+      - CERT_NAME=rpgservices.eu
+    networks:
+      net4:
+        ipv4_address: 172.18.208.2
+      net6:
+        ipv6_address: fc00::4
+

@@ -1,0 +1,15 @@
+  359  docker build -t ank-node22 -f Dockerfile .
+  360  docker images
+  381  docker rm campfire-backend
+  382  docker rm backend_lvm
+  383  docker rm backendapilvm-postgres-1
+  389  docker network ls
+  391  docker inspect --format '{{.Name}}:{{(index .IPAM.Config 0).Subnet}}' $(docker network ls -q)
+  403  docker ps
+  405  docker ps -a
+  401  docker network prune
+  402  docker-compose up -d
+  400  docker-compose down
+  500  docker compose up --build
+
+  412  history |grep docker >../docker_cmds.txt

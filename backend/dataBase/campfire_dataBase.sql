@@ -2,7 +2,7 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS role (
     id_role SERIAL PRIMARY KEY,
-    nom VARCHAR(255) NOT NULL,
+    nom VARCHAR(255) UNIQUE NOT NULL,
     description TEXT
     );
 
@@ -112,5 +112,46 @@ CREATE TABLE IF NOT EXISTS possede (
     CONSTRAINT fk_possede_planning
     FOREIGN KEY (id_planning) REFERENCES planning(id_planning)
     );
+
+--------------------------------------------
+--             TODO : TRIGGER             --
+--------------------------------------------
+
+        --TODO // : utilisateur and role
+
+-- Supposons que role_id = 1 correspond à ADMIN
+CREATE OR REPLACE FUNCTION prevent_second_admin()
+RETURNS trigger AS $$
+BEGIN
+    -- Vérifie si un autre admin existe
+    IF (NEW.id_role = 1) THEN
+        IF EXISTS (SELECT 1 FROM "utilisateur" WHERE id_role = 1) THEN
+            RAISE EXCEPTION 'Unable to create a second administrator';
+END IF;
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger sur insertion
+CREATE TRIGGER trg_prevent_second_admin
+    BEFORE INSERT ON "utilisateur"
+    FOR EACH ROW
+    EXECUTE FUNCTION prevent_second_admin();
+
+-- Trigger sur update (au cas où on change le rôle existant)
+CREATE TRIGGER trg_prevent_second_admin_update
+    BEFORE UPDATE OF id_role ON "utilisateur"
+    FOR EACH ROW
+    EXECUTE FUNCTION prevent_second_admin();
+
+--------------------------------------------
+--               TODO : SEED              --
+--------------------------------------------
+INSERT INTO role (nom, description) VALUES
+                                        ('ADMIN', 'Administrateur avec tous les droits'),
+                                        ('USER', 'Utilisateur standard'),
+                                        ('VISITOR', 'Utilisateur non connecté');
+
 
 COMMIT;
