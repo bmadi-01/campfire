@@ -1,3 +1,4 @@
+// backend/app/services/auth_service.js
 const utilisateurRepository = require('../repositories/utilisateur_repository');
 const roleRepository = require('../repositories/role_repository');
 const passwordUtils = require('../utils/password');
@@ -23,7 +24,7 @@ exports.register = async (userData) => {
         throw new Error('Un utilisateur avec cet email existe déjà');
     }
 
-    // 2️ Récupérer le rôle USER
+    // 2 Récupérer le rôle USER
     const roleUser = await roleRepository.findByName('USER');
     if (!roleUser) {
         throw new Error('Rôle USER introuvable en base');
@@ -32,7 +33,7 @@ exports.register = async (userData) => {
     // 3️ Hasher le mot de passe
     const hashedPassword = await passwordUtils.hashPassword(mot_de_passe);
 
-    // 4 Créer l'utilisateur avec rôle USER
+    // 4️ Créer l'utilisateur
     const user = await utilisateurRepository.create({
         prenom,
         pseudo,
@@ -44,9 +45,10 @@ exports.register = async (userData) => {
         id_role: roleUser.id_role
     });
 
-    // 5️ Générer le JWT
+    // 5️ Générer le JWT (payload cohérent)
     const token = jwtUtils.signToken({
         id: user.id_utilisateur,
+        email: user.email,
         role: roleUser.nom
     });
 
@@ -54,26 +56,21 @@ exports.register = async (userData) => {
         utilisateur: {
             id: user.id_utilisateur,
             email: user.email,
+            pseudo: user.pseudo,
             role: roleUser.nom
         },
         token
     };
 };
 
-
 /**
  * Connexion utilisateur
  */
-
 exports.login = async (email, mot_de_passe) => {
     // 1️ Vérifier l'existence de l'utilisateur
     const utilisateur = await utilisateurRepository.findByEmail(email);
-    if (!utilisateur) {
+    if (!utilisateur || !utilisateur.actif) {
         throw new Error('Email ou mot de passe incorrect');
-    }
-
-    if (!utilisateur.actif) {
-        throw new Error('Compte désactivé');
     }
 
     // 2️ Vérifier le mot de passe
@@ -86,20 +83,26 @@ exports.login = async (email, mot_de_passe) => {
         throw new Error('Email ou mot de passe incorrect');
     }
 
-    // 3️ Générer le JWT
+    // 3️ Récupérer le rôle
+    const role = await roleRepository.findById(utilisateur.id_role);
+    if (!role) {
+        throw new Error('Rôle utilisateur introuvable');
+    }
+
+    // 4️ Générer le JWT
     const token = jwtUtils.signToken({
         id: utilisateur.id_utilisateur,
         email: utilisateur.email,
-        role: utilisateur.id_role
+        role: role.nom
     });
 
     return {
         utilisateur: {
             id: utilisateur.id_utilisateur,
             email: utilisateur.email,
-            pseudo: utilisateur.pseudo
+            pseudo: utilisateur.pseudo,
+            role: role.nom
         },
         token
     };
 };
-

@@ -1,37 +1,33 @@
+// backend/app/middlewares/auth_jwt_middleware.js
 const jwtUtils = require('../utils/jwt');
 
 /**
  * Middleware d'authentification JWT
- * Vérifie si l'utilisateur est connecté
  */
-
 exports.authenticate = (req, res, next) => {
     try {
-        // 1️ Récupérer le header Authorization
         const authHeader = req.headers.authorization;
 
         if (!authHeader) {
-            return res.status(401).json({ message: 'Token manquant' });
+            return res.status(401).json({ message: 'Authentification requise' });
         }
 
-        // Format attendu : "Bearer token"
-        const parts = authHeader.split(' ');
-        if (parts.length !== 2 || parts[0] !== 'Bearer') {
+        // Format: Bearer <token>
+        const [type, token] = authHeader.split(' ');
+
+        if (type !== 'Bearer' || !token) {
             return res.status(401).json({ message: 'Format du token invalide' });
         }
 
-        const token = parts[1];
-
-        // 2️ Vérifier le token
         const decoded = jwtUtils.verifyToken(token);
 
-        // 3️ Injecter l'utilisateur dans la requête
+        // Injecter l'utilisateur décodé
         req.user = {
             id: decoded.id,
+            email: decoded.email,
             role: decoded.role
         };
 
-        // 4️ Continuer vers la route
         next();
     } catch (error) {
         return res.status(401).json({
