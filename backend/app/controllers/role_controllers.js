@@ -1,15 +1,39 @@
 const roleService = require('../services/role_service');
 
-async function getRoles(req, res) {
+/**
+ * Lister tous les rôles globaux
+ * GET /roles
+ */
+exports.getAll = async (req, res) => {
     try {
-        const role = await roleService.getAllRoles();
-        res.json(role);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Erreur serveur' });
-    }
-}
+        const roles = await roleService.getAll();
 
-module.exports = {
-    getRoles
+        res.status(200).json({
+            roles
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Récupérer un rôle par ID
+ * GET /roles/:id_role
+ */
+exports.getById = async (req, res) => {
+    try {
+        const role = await roleService.getById(
+            req.params.id_role
+        );
+
+        res.status(200).json({
+            role
+        });
+    } catch (error) {
+        res.status(404).json({
+            error: error.message
+        });
+    }
 };

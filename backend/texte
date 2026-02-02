@@ -1,0 +1,33 @@
+TODO : Les amelioration et idée
+
+Lorsqu’un événement est ajouté à un membre, ton service pourra intercepter et créer automatiquement l’événement
+dans le planning du groupe.
+
+TODO : UTILISATEUR
+Tu pourras ajouter : changeEmail() et aussi confirmationMFA() via cle_dfa
+
+TODO : ROLE
+Tout OK pas d'idée
+
+TODO : IDENTITE
+identité “temporaire” pour visiteurs
+
+TODO : GROUPE
+ajout de membres (invitation)
+
+TODO : PLANNING
+TODO : EVENEMENT
+
+TODO : DISPONIBILITE
+Remplacer Map() par Redis
+Ajouter signature JWT dans token d’invitation
+Ajouter limite de tentatives
+Logger les réponses
+Support visiteurs temporaires
+
+TODO :
+TODO : UTILISATEUR
+TODO : UTILISATEUR
+TODO : UTILISATEUR
+TODO : UTILISATEUR
+
