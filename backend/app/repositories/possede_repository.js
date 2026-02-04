@@ -6,17 +6,56 @@ exports.findAll = async () => {
 };
 
 /**
- * Lie un planning à un groupe
- * (ex: planning public ou privé du groupe)
+ * Alias MÉTIER → utilisé par le service
  */
-exports.addPlanningToGroupe = async (id_groupe, id_planning) => {
-    const { rows } = await db.query(
-        `INSERT INTO possede (id_groupe, id_planning)
-         VALUES ($1, $2)
-         RETURNING *`,
+exports.create = async ({ id_groupe, id_planning }) => {
+    await db.query(
+        `
+        INSERT INTO possede (id_groupe, id_planning)
+        VALUES ($1, $2)
+        ON CONFLICT DO NOTHING
+        `,
         [id_groupe, id_planning]
     );
-    return rows[0];
+
+    return { id_groupe, id_planning };
+};
+
+/**
+ * Alias MÉTIER → utilisé par le service
+ */
+exports.delete = async (id_groupe, id_planning) => {
+    const result = await db.query(
+        `
+        DELETE FROM possede
+        WHERE id_groupe = $1 AND id_planning = $2
+        `,
+        [id_groupe, id_planning]
+    );
+
+    return result.rowCount > 0;
+};
+
+/**
+ * Fonctions métier explicites (conservées)
+ */
+exports.addPlanningToGroupe = exports.create;
+
+exports.removePlanningFromGroupe = exports.delete;
+
+/**
+ * Vérifie si un planning appartient à un groupe
+ */
+exports.exists = async (id_groupe, id_planning) => {
+    const { rows } = await db.query(
+        `
+        SELECT 1
+        FROM possede
+        WHERE id_groupe = $1 AND id_planning = $2
+        `,
+        [id_groupe, id_planning]
+    );
+    return rows.length > 0;
 };
 
 /**
@@ -24,43 +63,20 @@ exports.addPlanningToGroupe = async (id_groupe, id_planning) => {
  */
 exports.findPlanningsByGroupe = async (id_groupe) => {
     const { rows } = await db.query(
-        `SELECT p.*
-         FROM planning p
-         JOIN possede po ON po.id_planning = p.id_planning
-         WHERE po.id_groupe = $1`,
+        `
+        SELECT p.*
+        FROM planning p
+        JOIN possede po ON po.id_planning = p.id_planning
+        WHERE po.id_groupe = $1
+        `,
         [id_groupe]
     );
     return rows;
 };
 
 /**
- * Vérifie si un planning appartient à un groupe
- */
-exports.exists = async (id_groupe, id_planning) => {
-    const { rows } = await db.query(
-        `SELECT 1
-         FROM possede
-         WHERE id_groupe = $1 AND id_planning = $2`,
-        [id_groupe, id_planning]
-    );
-    return rows.length > 0;
-};
-
-/**
- * Supprime le lien entre un groupe et un planning
- */
-exports.removePlanningFromGroupe = async (id_groupe, id_planning) => {
-    const result = await db.query(
-        `DELETE FROM possede
-         WHERE id_groupe = $1 AND id_planning = $2`,
-        [id_groupe, id_planning]
-    );
-    return result.rowCount > 0;
-};
-
-/**
- * Supprime tous les plannings liés à un groupe
- * (ex: suppression du groupe)
+ * Supprime tous les liens planning ↔ groupe
+ * (suppression du groupe)
  */
 exports.removeAllPlanningsFromGroupe = async (id_groupe) => {
     const result = await db.query(

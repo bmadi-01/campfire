@@ -17,6 +17,15 @@ ajout de membres (invitation)
 
 TODO : PLANNING
 TODO : EVENEMENT
+Points d’amélioration (que je te recommande)
+🔥 Amélioration 1 : transaction SQL
+créer événement perso + groupe dans une transaction
+rollback si conflit
+🔥 Amélioration 2 : détection groupe plus propre
+passer id_groupe explicitement au service
+éviter toute ambiguïté
+🔥 Amélioration 3 : lien logique perso ↔ groupe
+ajouter un event_parent_id plus tard
 
 TODO : DISPONIBILITE
 Remplacer Map() par Redis
@@ -25,9 +34,34 @@ Ajouter limite de tentatives
 Logger les réponses
 Support visiteurs temporaires
 
-TODO :
+TODO : Empêcher suppression si événements existants
+
 TODO : UTILISATEUR
 TODO : UTILISATEUR
 TODO : UTILISATEUR
 TODO : UTILISATEUR
 
+
+TODO : // code couleur pour les présence
+
+await presenceService.create({
+  nom: 'PRESENT',
+  background: '#4CAF50',
+  foreground: '#FFFFFF'
+});
+
+await presenceService.create({
+  nom: 'ABSENT',
+  background: '#F44336',
+  foreground: '#FFFFFF'
+});
+
+await presenceService.create({
+  nom: 'PEUT_ETRE',
+  background: '#FFC107',
+  foreground: '#000000'
+});
+
+await levelService.create({ nom: 'ORGANISATEUR' });
+await levelService.create({ nom: 'MEMBRE' });
+await levelService.create({ nom: 'INVITE' });

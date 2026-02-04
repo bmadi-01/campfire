@@ -28,7 +28,7 @@ exports.updateMe = async (req, res) => {
 
         const utilisateur = await utilisateurService.update(
             req.user.id,
-            updates
+            req.body
         );
 
         res.status(200).json({
@@ -43,28 +43,21 @@ exports.updateMe = async (req, res) => {
 };
 
 /**
- * Changer le mot de passe
+ * Changement du mot de passe utilisateur connecté
  * PUT /utilisateurs/me/password
  */
 exports.changePassword = async (req, res) => {
     try {
         const { ancien_mot_de_passe, nouveau_mot_de_passe } = req.body;
 
-        if (!ancien_mot_de_passe || !nouveau_mot_de_passe) {
-            return res.status(400).json({
-                error: 'Ancien et nouveau mot de passe requis'
-            });
-        }
-
-        await utilisateurService.changePassword(
+        const result = await utilisateurService.changePassword(
             req.user.id,
             ancien_mot_de_passe,
             nouveau_mot_de_passe
         );
 
-        res.status(200).json({
-            message: 'Mot de passe modifié avec succès'
-        });
+        res.status(200).json(result);
+
     } catch (error) {
         res.status(400).json({
             error: error.message

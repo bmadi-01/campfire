@@ -18,6 +18,16 @@ exports.findByName = async (nom) => {
 };
 
 /**
+ * Trouve un un rôle par son ID
+ */
+exports.findById = async(id_role) => {
+    const { rows } = await db.query(
+        'SELECT * FROM role WHERE id_role = $1',[id_role]
+    );
+    return rows[0] || null;
+}
+
+/**
  * Crée un rôle via le script backend/scripts/sedd_...
  * @param {Object} role - {nom, description}
  * @returns {Promise<Object>} rôle créé
@@ -29,4 +39,21 @@ exports.create = async (role) => {
         [nom, description]
     );
     return rows[0];
+};
+
+/**
+ * Supprime un rôle global par son ID
+ * @param {number} id_role
+ * @returns {Promise<boolean>} true si supprimé
+ */
+exports.delete = async (id_role) => {
+    const result = await db.query(
+        `
+        DELETE FROM role
+        WHERE id_role = $1
+        `,
+        [id_role]
+    );
+
+    return result.rowCount > 0;
 };

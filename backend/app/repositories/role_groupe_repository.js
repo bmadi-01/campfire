@@ -65,6 +65,27 @@ exports.updateLevel = async (id_groupe, id_identite, id_level) => {
 };
 
 /**
+ * Compte le nombre de membres d'un groupe pour un niveau donné
+ * @param {number} id_groupe - identifiant du groupe
+ * @param {string} levelNom - nom du niveau (ORGANISATEUR, MEMBRE, INVITE)
+ * @returns {Promise<number>} nombre de membres
+ */
+exports.countByLevel = async (id_groupe, levelNom) => {
+    const { rows } = await db.query(
+        `
+        SELECT COUNT(*)::int AS count
+        FROM role_groupe rg
+        JOIN level l ON rg.id_level = l.id_level
+        WHERE rg.id_groupe = $1
+          AND l.nom = $2
+        `,
+        [id_groupe, levelNom]
+    );
+
+    return rows[0]?.count || 0;
+};
+
+/**
  * Retire une identité d’un groupe
  */
 exports.removeFromGroupe = async (id_groupe, id_identite) => {
@@ -73,5 +94,24 @@ exports.removeFromGroupe = async (id_groupe, id_identite) => {
          WHERE id_groupe = $1 AND id_identite = $2`,
         [id_groupe, id_identite]
     );
+    return result.rowCount > 0;
+};
+
+/**
+ * Supprime une identité d'un groupe
+ * @param {number} id_groupe - identifiant du groupe
+ * @param {number} id_identite - identifiant de l'identité
+ * @returns {Promise<boolean>} true si supprimé
+ */
+exports.delete = async (id_groupe, id_identite) => {
+    const result = await db.query(
+        `
+        DELETE FROM role_groupe
+        WHERE id_groupe = $1
+          AND id_identite = $2
+        `,
+        [id_groupe, id_identite]
+    );
+
     return result.rowCount > 0;
 };

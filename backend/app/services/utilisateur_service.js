@@ -26,62 +26,76 @@ exports.getById = async (id_utilisateur) => {
 };
 
 /**
- * Met à jour les informations du profil utilisateur
- * (hors mot de passe)
+ * Mise à jour du profil utilisateur (utilisateur connecté)
+ * @param {number} userId - ID de l'utilisateur connecté (req.user.id)
+ * @param {Object} data - champs à mettre à jour
  */
-exports.updateProfile = async (id_utilisateur, updates) => {
-    const allowedFields = [
-        'prenom',
-        'pseudo',
-        'email',
-        'cle_dfa'
-    ];
+exports.update = async (userId, data) => {
+    if (!userId) {
+        throw new Error('Utilisateur non authentifié');
+    }
 
-    const safeUpdates = {};
+    // Champs autorisés uniquement
+    const allowedFields = ['prenom', 'pseudo', 'email', 'actif'];
+
+    const updates = {};
 
     for (const key of allowedFields) {
-        if (updates[key] !== undefined) {
-            safeUpdates[key] = updates[key];
+        if (data[key] !== undefined) {
+            updates[key] = data[key];
         }
     }
 
-    if (Object.keys(safeUpdates).length === 0) {
-        throw new Error('Aucune donnée à mettre à jour');
+    // Aucun champ valide fourni
+    if (Object.keys(updates).length === 0) {
+        throw new Error('Aucune donnée valide à mettre à jour');
     }
 
+    // Vérifier que l'utilisateur existe
+    const utilisateur = await utilisateurRepository.findById(userId);
+    if (!utilisateur) {
+        throw new Error('Utilisateur introuvable');
+    }
+
+    // Mise à jour via le repository
     const updatedUser = await utilisateurRepository.update(
-        id_utilisateur,
-        safeUpdates
+        userId,
+        updates
     );
-
-    if (!updatedUser) {
-        throw new Error('Mise à jour impossible');
-    }
 
     return {
         id: updatedUser.id_utilisateur,
         prenom: updatedUser.prenom,
         pseudo: updatedUser.pseudo,
-        email: updatedUser.email
+        email: updatedUser.email,
+        actif: updatedUser.actif
     };
 };
 
 /**
- * Changement de mot de passe
+ * Changement du mot de passe utilisateur (utilisateur connecté)
+ * @param {number} userId - ID utilisateur connecté
+ * @param {string} oldPassword - ancien mot de passe
+ * @param {string} newPassword - nouveau mot de passe
  */
-exports.changePassword = async (
-    id_utilisateur,
-    ancienMotDePasse,
-    nouveauMotDePasse
-) => {
-    const utilisateur = await utilisateurRepository.findById(id_utilisateur);
+exports.changePassword = async (userId, oldPassword, newPassword) => {
+    if (!userId) {
+        throw new Error('Utilisateur non authentifié');
+    }
 
+    if (!oldPassword || !newPassword) {
+        throw new Error('Ancien et nouveau mot de passe requis');
+    }
+
+    //  Récupérer l'utilisateur
+    const utilisateur = await utilisateurRepository.findById(userId);
     if (!utilisateur) {
         throw new Error('Utilisateur introuvable');
     }
 
+    //  Vérifier l'ancien mot de passe
     const isValid = await passwordUtils.verifyPassword(
-        ancienMotDePasse,
+        oldPassword,
         utilisateur.mot_de_passe
     );
 
@@ -89,15 +103,17 @@ exports.changePassword = async (
         throw new Error('Ancien mot de passe incorrect');
     }
 
-    const hashedPassword = await passwordUtils.hashPassword(
-        nouveauMotDePasse
-    );
+    //  Hasher le nouveau mot de passe
+    const hashedPassword = await passwordUtils.hashPassword(newPassword);
 
-    await utilisateurRepository.update(id_utilisateur, {
+    //  Mise à jour
+    await utilisateurRepository.update(userId, {
         mot_de_passe: hashedPassword
     });
 
-    return { message: 'Mot de passe mis à jour avec succès' };
+    return {
+        message: 'Mot de passe mis à jour avec succès'
+    };
 };
 
 /**

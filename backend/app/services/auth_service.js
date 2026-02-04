@@ -15,8 +15,12 @@ exports.register = async (userData) => {
         mot_de_passe,
         ip_cgu,
         date_cgu,
-        cle_dfa = null
+        cle_dfa = 123456
     } = userData;
+
+    if (!mot_de_passe || !email || !prenom) {
+        throw new Error('Champs obligatoires manquants prenom, email, mot de passe etc...');
+    }
 
     // 1️ Vérifier si l'utilisateur existe
     const existingUser = await utilisateurRepository.findByEmail(email);
@@ -67,13 +71,15 @@ exports.register = async (userData) => {
  * Connexion utilisateur
  */
 exports.login = async (email, mot_de_passe) => {
-    // 1️ Vérifier l'existence de l'utilisateur
     const utilisateur = await utilisateurRepository.findByEmail(email);
-    if (!utilisateur || !utilisateur.actif) {
+    if (!utilisateur) {
         throw new Error('Email ou mot de passe incorrect');
     }
 
-    // 2️ Vérifier le mot de passe
+    if (!utilisateur.actif) {
+        throw new Error('Compte désactivé');
+    }
+
     const isPasswordValid = await passwordUtils.verifyPassword(
         mot_de_passe,
         utilisateur.mot_de_passe
@@ -83,13 +89,13 @@ exports.login = async (email, mot_de_passe) => {
         throw new Error('Email ou mot de passe incorrect');
     }
 
-    // 3️ Récupérer le rôle
+    //  Récupérer le rôle COMPLET
     const role = await roleRepository.findById(utilisateur.id_role);
     if (!role) {
         throw new Error('Rôle utilisateur introuvable');
     }
 
-    // 4️ Générer le JWT
+    //  Générer le JWT avec le NOM du rôle
     const token = jwtUtils.signToken({
         id: utilisateur.id_utilisateur,
         email: utilisateur.email,

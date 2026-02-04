@@ -43,7 +43,7 @@ exports.create = async (user) => {
 /**
  * Met a jour un utilisateur
  * @param{number} id_utilisateur
- * @param {Object} updates - { prenom?, pseudo?, mail?, mot_de_passe?, actif?, cle_dfa? }
+ * @param {Object} updates - { prenom?, pseudo?, email?, mot_de_passe?, actif? }
  * @returns {Promise<Object>} l'utilisateur mis à jour
  */
 exports.update = async (id_utilisateur, updates) => {
