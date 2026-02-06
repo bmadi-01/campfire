@@ -49,7 +49,7 @@ exports.addMember = async ({
 /**
  * Change le niveau d’une identité dans un groupe
  */
-exports.changeRole = async ({
+exports.updateMemberRole = async ({
                                 id_groupe,
                                 id_identite,
                                 newLevelName,

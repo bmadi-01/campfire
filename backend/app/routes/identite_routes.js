@@ -6,6 +6,7 @@ const { authenticate } = require('../middlewares/auth_jwt_middleware');
 router.post('/', authenticate, identiteController.create);
 router.get('/me', authenticate, identiteController.getMyIdentites);
 router.get('/:id_identite', authenticate, identiteController.getById);
+router.patch('/:id_identite', authenticate, identiteController.update);
 router.delete('/:id_identite', authenticate, identiteController.delete);
 
 module.exports = router;

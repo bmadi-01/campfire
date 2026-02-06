@@ -1,20 +1,31 @@
 const identiteRepository = require('../repositories/identite_repository');
 const utilisateurRepository = require('../repositories/utilisateur_repository');
+const roleGroupeRepository = require('../repositories/role_groupe_repository');
+const disponibiliteRepository = require('../repositories/disponibilite_repository');
 
 /**
  * Crée une identité pour un utilisateur
  * (ex: identité dans un groupe ou organisation)
  */
-exports.create = async ({ nom, id_utilisateur }) => {
-    // Vérifier que l'utilisateur existe
-    const utilisateur = await utilisateurRepository.findById(id_utilisateur);
+exports.create = async (userId, nom) => {
+    console.log('DEBUG userId reçu:', userId);
+
+    if (!userId) {
+        throw new Error('Utilisateur non authentifié');
+    }
+
+    if (!nom) {
+        throw new Error('Nom de l’identité requis');
+    }
+
+    const utilisateur = await utilisateurRepository.findById(userId);
     if (!utilisateur) {
-        throw new Error('Utilisateur introuvable');
+        throw new Error('Crée une identité pour un utilisateur: Utilisateur introuvable');
     }
 
     return await identiteRepository.create({
         nom,
-        id_utilisateur
+        id_utilisateur: userId
     });
 };
 
@@ -52,14 +63,25 @@ exports.getByGroupe = async (id_groupe) => {
 
 /**
  * Met à jour une identité
- * (ex: renommer une identité)
+ * (uniquement si elle appartient à l'utilisateur connecté)
  */
-exports.update = async (id_identite, updates) => {
+exports.update = async (id_identite, updates, userId) => {
+    if (!userId) {
+        throw new Error('Utilisateur non authentifié');
+    }
+
+    // Vérifier l'identité
     const identite = await identiteRepository.findById(id_identite);
     if (!identite) {
         throw new Error('Identité introuvable');
     }
 
+    // Ownership
+    if (identite.id_utilisateur !== userId) {
+        throw new Error('Accès interdit : cette identité ne vous appartient pas');
+    }
+
+    // Champs autorisés
     const allowedFields = ['nom'];
     const safeUpdates = {};
 
@@ -73,36 +95,36 @@ exports.update = async (id_identite, updates) => {
         throw new Error('Aucune donnée valide à mettre à jour');
     }
 
+    // Mise à jour
     return await identiteRepository.update(id_identite, safeUpdates);
 };
+
 
 /**
  * Supprime une identité
  * ⚠️ La cascade métier (disponibilités, rôles de groupe)
  * doit être gérée dans les services appelants
  */
-exports.delete = async (id_identite) => {
+exports.delete = async (id_identite, userId) => {
+    if (!userId) {
+        throw new Error('Utilisateur non authentifié');
+    }
+
+    // Vérifier l'identité
     const identite = await identiteRepository.findById(id_identite);
     if (!identite) {
         throw new Error('Identité introuvable');
     }
 
+    // Ownership
+    if (identite.id_utilisateur !== userId) {
+        throw new Error('Accès interdit : cette identité ne vous appartient pas');
+    }
+
+    // Cascade métier
+    await roleGroupeRepository.deleteByIdentite(id_identite);
+    await disponibiliteRepository.deleteByIdentite(id_identite);
+
+    // Suppression finale
     return await identiteRepository.delete(id_identite);
-};
-
-/**
- * Vérifie qu’une identité appartient bien à un utilisateur
- * (utile pour les permissions)
- */
-exports.checkOwnership = async (id_identite, id_utilisateur) => {
-    const identite = await identiteRepository.findById(id_identite);
-    if (!identite) {
-        throw new Error('Identité introuvable');
-    }
-
-    if (identite.id_utilisateur !== id_utilisateur) {
-        throw new Error('Accès interdit : identité non liée à l’utilisateur');
-    }
-
-    return true;
 };

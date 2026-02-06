@@ -7,8 +7,8 @@ const identiteService = require('../services/identite_service');
 exports.create = async (req, res) => {
     try {
         const identite = await identiteService.create(
-            req.body,
-            req.user.id
+            req.user.id,
+            req.body.nom
         );
 
         res.status(201).json({
@@ -28,7 +28,7 @@ exports.create = async (req, res) => {
  */
 exports.getMyIdentites = async (req, res) => {
     try {
-        const identites = await identiteService.getByUser(
+        const identites = await identiteService.getByUtilisateur(
             req.user.id
         );
 
@@ -61,6 +61,31 @@ exports.getById = async (req, res) => {
         });
     }
 };
+
+/**
+ * Mettre à jour une identité
+ * PATCH /identites/:id_identite
+ */
+exports.update = async (req, res) => {
+    try {
+        const identite = await identiteService.update(
+            req.params.id_identite,
+            req.body,
+            req.user.id
+        );
+
+
+        res.status(200).json({
+            message: 'Identité mise à jour avec succès',
+            identite
+        });
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        });
+    }
+};
+
 
 /**
  * Supprimer une identité

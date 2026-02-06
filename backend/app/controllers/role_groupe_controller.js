@@ -22,13 +22,14 @@ exports.getMembers = async (req, res) => {
  */
 exports.updateRole = async (req, res) => {
     try {
-        const { id_level } = req.body;
+        const { newLevelName, actingIdentiteId } = req.body;
 
-        const membre = await roleGroupeService.updateMemberRole(
-            req.params.id_groupe,
-            req.params.id_identite,
-            id_level
-        );
+        const membre = await roleGroupeService.updateMemberRole({
+            id_groupe: req.params.id_groupe,
+            id_identite: req.params.id_identite,
+            newLevelName,
+            changedByIdentiteId: actingIdentiteId
+        });
 
         res.status(200).json({
             message: 'Rôle mis à jour',
@@ -45,10 +46,13 @@ exports.updateRole = async (req, res) => {
  */
 exports.remove = async (req, res) => {
     try {
-        await roleGroupeService.removeMember(
-            req.params.id_groupe,
-            req.params.id_identite
-        );
+        const { actingIdentiteId } = req.body;
+
+        await roleGroupeService.removeMember({
+            id_groupe: req.params.id_groupe,
+            id_identite: req.params.id_identite,
+            removedByIdentiteId: actingIdentiteId
+        });
 
         res.status(200).json({
             message: 'Membre retiré du groupe'

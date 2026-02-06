@@ -1,0 +1,47 @@
+TODO : profile 1
+
+{
+  "prenom": "Alice",
+  "pseudo": "alice42",
+  "email": "alice@test.com",
+  "mot_de_passe": "MotDePasse123!",
+  "ip_cgu": "127.0.0.1",
+  "date_cgu": "2026-02-03"
+}
+
+{
+  "email": "alice@test.com",
+  "mot_de_passe": "MotDePasse123!"
+}
+
+TODO : profile 2
+
+{
+  "prenom": "Borice",
+  "pseudo": "Bobo",
+  "email": "borice@test.com",
+  "mot_de_passe": "MotDePasse456!",
+  "ip_cgu": "127.0.0.1",
+  "date_cgu": "2026-02-03"
+}
+
+{
+  "email": "borice@test.com",
+  "mot_de_passe": "MotDePasse456!"
+}
+
+TODO : profile 3
+
+{
+  "prenom": "Madi",
+  "pseudo": "madi",
+  "email": "madi@test.com",
+  "mot_de_passe": "MotDePasse789!",
+  "ip_cgu": "127.0.0.1",
+  "date_cgu": "2026-02-03"
+}
+
+{
+  "email": "madi@test.com",
+  "mot_de_passe": "MotDePasse789!"
+}

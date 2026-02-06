@@ -19,19 +19,19 @@
 ```
 {
   "email": "alice@test.com",
-  "mot_de_passe": "MotDePasse123!",
+  "mot_de_passe": "MotDePasse123!"
 }
 ```
 ### Teste pour les utilisateurs connectés 
 
 Pour que mon api sache que tu es connecté, il demande un token de verification si il est valide alors la route 
-utilisateur/me est le tocken atendu corespondent. 
+utilisateur/me. Est le tocken atendu corespondent. 
 
 > GET : http://localhost:4000/utilisateurs/me
 ```
 {
   "email": "alice@test.com",
-  "mot_de_passe": "MotDePasse123!",
+  "mot_de_passe": "MotDePasse123!"
 }
 ```
 Ce **_body/row_** plus son token nous permet de lui donner l'accer a notre app car il est bien enregitré dans 
@@ -44,7 +44,7 @@ la base de donnée et peut se loguer.
 > PUT : http://localhost:4000/utilisateurs/me
 ```
 {
-  "email": "alice@test.com",
+  "email": "alice1@test.com"
 }
 ```
 Toujours avec le token
@@ -57,6 +57,16 @@ On peut fair les modifications suivente [prenom, pseudo, email, actif]
   "nouveau_mot_de_passe": "NouveauMotDePasse456!"
 }
 ```
+### Teste de permission utilisateur connecté pour la création d'une identité
+> POST : http://localhost:4000/identites
+
+Toujours avec le token 
+```
+{
+  "nom": "Alice la mage",
+}
+```
+
 ### Teste de permission utilisateur connecté (ADMIN et USER)
 Petit rappel de mon système de JWT qui nous donne pas mal d'information dont l'ID, le mail, on peut aussi savoir son role
 est bien pour ce teste, nous allons comparer 2 role. compte (ADMIN) et compte (USER)
@@ -105,3 +115,4 @@ toujours avec le token
   "description": "Créé par un role admin"
 }
 ```
+

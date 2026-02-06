@@ -98,6 +98,16 @@ exports.removeFromGroupe = async (id_groupe, id_identite) => {
 };
 
 /**
+ * Supprime tous les rôles de groupe liés à une identité
+ */
+exports.deleteByIdentite = async (id_identite) => {
+    await db.query(
+        'DELETE FROM role_groupe WHERE id_identite = $1',
+        [id_identite]
+    );
+};
+
+/**
  * Supprime une identité d'un groupe
  * @param {number} id_groupe - identifiant du groupe
  * @param {number} id_identite - identifiant de l'identité

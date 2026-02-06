@@ -21,6 +21,12 @@ exports.authenticate = (req, res, next) => {
 
         const decoded = jwtUtils.verifyToken(token);
 
+        if (!decoded.id) {
+            return res.status(401).json({
+                message: 'Token invalide (id utilisateur manquant)'
+            });
+        }
+
         // Injecter l'utilisateur décodé
         req.user = {
             id: decoded.id,

@@ -87,6 +87,17 @@ exports.update = async ({ id_identite, id_evenement, id_presence }) => {
 };
 
 /**
+ * Supprime toutes les disponibilités liées à une identité
+ */
+exports.deleteByIdentite = async (id_identite) => {
+    await db.query(
+        'DELETE FROM disponibilite WHERE id_identite = $1',
+        [id_identite]
+    );
+};
+
+
+/**
  * Supprime une disponibilité
  * (ex : refus d'invitation ou retrait)
  */

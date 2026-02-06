@@ -14,7 +14,7 @@ exports.findByEmail = async (email) => {
 }
 
 /**
- * Trouve un utilisateur par sont ID
+ * Trouve un utilisateur par son ID
  * @param {number} id_utilisateur - identifient de l'utilisateur
  * @returns {promise<Object|null>} -l'utilisateur ou null si non trouvé
  */
