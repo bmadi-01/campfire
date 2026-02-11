@@ -1,0 +1,16 @@
+.card {
+    height: 100%;
+    width: 100%;
+
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: radial-gradient(
+            circle at center,
+            #ff9f43 0%,
+            #2b1d16 0%,
+            #0f0f12 80%
+    );
+}

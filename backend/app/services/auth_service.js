@@ -25,7 +25,9 @@ exports.register = async (userData) => {
     // 1️ Vérifier si l'utilisateur existe
     const existingUser = await utilisateurRepository.findByEmail(email);
     if (existingUser) {
-        throw new Error('Un utilisateur avec cet email existe déjà');
+        const error = new Error('Un utilisateur avec cet email existe déjà');
+        error.statusCode = 409;
+        throw error;
     }
 
     // 2 Récupérer le rôle USER
