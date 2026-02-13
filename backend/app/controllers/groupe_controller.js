@@ -2,6 +2,26 @@ const groupeService = require('../services/groupe_service');
 const roleGroupeService = require('../services/role_groupe_service');
 
 /**
+ * Récupérer les groupes de l'utilisateur connecté
+ * GET /groupes
+ */
+exports.getMyGroups = async (req, res) => {
+    try {
+        const groupes = await groupeService.getMyGroups(req.user.id);
+
+        res.status(200).json({
+            groupes
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        });
+    }
+};
+
+
+/**
  * Créer un groupe
  * POST /groupes
  */

@@ -1,0 +1,180 @@
+/* =========================
+   NAVBAR CONTAINER
+   ========================= */
+.navBar {
+    position: sticky;
+    top: 0;
+    width: 97%;
+    min-height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: clamp(0.75rem, 2vw, 2rem);
+
+    background: rgba(15, 15, 18, 0.98);
+    backdrop-filter: blur(10px);
+
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+}
+
+
+/* =========================
+   LOGO (LEFT)
+   ========================= */
+.navBar__logo img {
+    height: 60px;
+    cursor: pointer;
+
+    filter: drop-shadow(0 0 10px rgba(255, 159, 67, 0.35));
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.navBar__logo img:hover {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 18px rgba(255, 159, 67, 0.6));
+}
+
+/* =========================
+   MENU (RIGHT)
+   ========================= */
+.navBar__menu {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+/* Liens */
+.navBar__menu a {
+    position: relative;
+    color: #f5f5f5;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.3rem;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: color 0.25s ease;
+}
+
+.navBar__menu a:hover {
+    color: #ff9f43;
+}
+
+/* Soulignement animé */
+.navBar__menu a::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: linear-gradient(90deg, #ff9f43, #ff6b2d);
+    transition: width 0.3s ease;
+}
+
+.navBar__menu a:hover::after {
+    width: 100%;
+}
+
+/* =========================
+   BOUTON SON 🔥
+   ========================= */
+.sound-toggler {
+    padding: 6px 14px;
+
+    border-radius: 20px;
+    border: 1px solid rgba(255, 159, 67, 0.4);
+    background: rgba(255, 159, 67, 0.12);
+
+    color: #ff9f43;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition:
+            background 0.25s ease,
+            box-shadow 0.25s ease,
+            transform 0.2s ease;
+}
+
+.sound-toggler:hover {
+    background: rgba(255, 159, 67, 0.25);
+    box-shadow: 0 0 14px rgba(255, 159, 67, 0.6);
+    transform: scale(1.05);
+}
+
+/* État actif (si tu veux le gérer plus tard) */
+.sound-toggler.active {
+    background: linear-gradient(135deg, #ff9f43, #ff6b2d);
+    color: #1a1a1a;
+    box-shadow: 0 0 18px rgba(255, 159, 67, 0.9);
+}
+
+/* =========================
+   RESPONSIVE (mobile)
+   ========================= */
+@media (max-width: 768px) {
+    .navBar {
+        padding: 0 16px;
+    }
+
+    .navBar__menu {
+        gap: 16px;
+    }
+
+    .navBar__menu a {
+        font-size: 0.85rem;
+    }
+}
+
+
+.roleBadge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+/* ADMIN */
+.roleBadge.admin {
+    background: rgba(255, 77, 79, 0.15);
+    color: #ff4d4f;
+    border: 1px solid rgba(255, 77, 79, 0.4);
+}
+
+.roleBadge.admin:hover {
+    background: rgba(255, 77, 79, 0.3);
+    box-shadow: 0 0 10px rgba(255, 77, 79, 0.6);
+}
+
+/* UTILISATEUR */
+.roleBadge.utilisateur {
+    background: rgba(255, 159, 67, 0.15);
+    color: #ff9f43;
+    border: 1px solid rgba(255, 159, 67, 0.4);
+}
+
+.roleBadge.utilisateur:hover {
+    background: rgba(255, 159, 67, 0.3);
+    box-shadow: 0 0 10px rgba(255, 159, 67, 0.6);
+}
+
+.logoutButton {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: #f5f5f5;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.logoutButton:hover {
+    background: rgba(255, 77, 79, 0.2);
+    border-color: rgba(255, 77, 79, 0.6);
+}

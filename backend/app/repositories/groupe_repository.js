@@ -35,6 +35,26 @@ exports.findByName = async (nom) => {
     );
     return rows[0] || null;
 };
+/**
+ * Récupère les groupes d’un utilisateur
+ * @param {number} id_utilisateur
+ * @returns {Promise<Array>}
+ */
+exports.findByUserId = async (id_utilisateur) => {
+    const { rows } = await db.query(
+        `
+        SELECT DISTINCT g.*
+        FROM groupe g
+        JOIN role_groupe rg ON g.id_groupe = rg.id_groupe
+        JOIN identite i ON rg.id_identite = i.id_identite
+        WHERE i.id_utilisateur = $1
+        `,
+        [id_utilisateur]
+    );
+
+    return rows;
+};
+
 
 /**
  * Crée un nouveau groupe

@@ -81,7 +81,6 @@ function LoginPage() {
 
         // 🔥 Simulation login OK
         console.log("Connexion validée");
-        navigate("/home");
     };
 
     return (

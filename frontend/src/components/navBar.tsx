@@ -30,13 +30,12 @@ function NavBar () {
                 <motion.div className="navBar__menu">
                     <Link to="planning">Planning</Link>
                     <Link to="groupe">Groupes</Link>
-                    <Link to="profile">Profil</Link>
 
                     {/*Bouton son*/}
                     <button
-                        className="sound-toggler"
+                        className={`sound-toggler ${soundEnabled ? "active" : ""}`}
                         type="button"
-                        onClick={() => setSoundEnabled(!soundEnabled)} title="Son">Feu</button>
+                        onClick={() => setSoundEnabled(!soundEnabled)} title="Son">🔥</button>
                 </motion.div>
             </motion.nav>
         </>

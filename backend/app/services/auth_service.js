@@ -109,6 +109,7 @@ exports.login = async (email, mot_de_passe) => {
             id: utilisateur.id_utilisateur,
             email: utilisateur.email,
             pseudo: utilisateur.pseudo,
+            prenom: utilisateur.prenom,
             role: role.nom
         },
         token

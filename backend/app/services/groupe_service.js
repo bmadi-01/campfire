@@ -16,6 +16,15 @@ const db = require('../driver_connex_db');
  * - crée l’identité organisateur
  * - assigne le niveau ORGANISATEUR
  */
+
+/**
+ * Récupère les groupes de l'utilisateur connecté
+ */
+exports.getMyGroups = async (id_utilisateur) => {
+    return await groupeRepository.findByUserId(id_utilisateur);
+};
+
+
 exports.create = async ({ nom, description }, id_utilisateur) => {
     const client = await db.connect();
 
