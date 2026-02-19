@@ -28,7 +28,11 @@ exports.getMyGroups = async (req, res) => {
 exports.create = async (req, res) => {
     try {
         const groupe = await groupeService.create(
-            req.body,
+            {
+                nom: req.body.nom,
+                description: req.body.description,
+                id_identite: req.body.id_identite
+            },
             req.user.id
         );
 

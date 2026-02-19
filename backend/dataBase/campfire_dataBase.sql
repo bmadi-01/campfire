@@ -1,5 +1,8 @@
 BEGIN;
 
+--------------------------------------------
+--         TODO : CREATION TABLE          --
+--------------------------------------------
 CREATE TABLE IF NOT EXISTS role (
     id_role SERIAL PRIMARY KEY,
     nom VARCHAR(255) UNIQUE NOT NULL,
@@ -8,15 +11,18 @@ CREATE TABLE IF NOT EXISTS role (
 
 CREATE TABLE IF NOT EXISTS groupe (
     id_groupe SERIAL PRIMARY KEY,
-    nom VARCHAR(255) NOT NULL,
+    nom VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
     date_creation DATE
     );
 
-CREATE TABLE IF NOT EXISTS calendrier (
+DROP TABLE IF EXISTS calendrier CASCADE;
+
+CREATE TABLE calendrier (
     id_calendrier SERIAL PRIMARY KEY,
-    type_calendrier VARCHAR(255) NOT NULL
-    );
+    type VARCHAR(50) NOT NULL UNIQUE
+        CHECK (type IN ('GREGORIEN', 'DIEGETIQUE'))
+);
 
 CREATE TABLE IF NOT EXISTS level (
     id_level SERIAL PRIMARY KEY,
@@ -112,6 +118,56 @@ CREATE TABLE IF NOT EXISTS possede (
     CONSTRAINT fk_possede_planning
     FOREIGN KEY (id_planning) REFERENCES planning(id_planning)
     );
+
+--------------------------------------------
+--       TODO : NEW CREATION TABLE        --
+--------------------------------------------
+
+CREATE TABLE planning_calendar_config (
+    id_planning INTEGER PRIMARY KEY,
+    -- Structure semaine
+    jours_semaine JSONB NOT NULL,
+    -- Structure mois
+    mois JSONB NOT NULL,
+    -- Structure année
+    jours_par_annee INTEGER NOT NULL,
+    annee_debut INTEGER NOT NULL DEFAULT 1,
+    -- Structure horaire
+    heures_par_jour INTEGER NOT NULL,
+    minutes_par_heure INTEGER NOT NULL,
+
+    FOREIGN KEY (id_planning)
+        REFERENCES planning(id_planning)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE planning_calendar_state (
+    id_planning INTEGER PRIMARY KEY,
+    annee INTEGER NOT NULL,
+    mois INTEGER NOT NULL,
+    jour INTEGER NOT NULL,
+    heure INTEGER NOT NULL,
+    minute INTEGER NOT NULL,
+
+    FOREIGN KEY (id_planning)
+        REFERENCES planning(id_planning)
+        ON DELETE CASCADE
+);
+
+--------------------------------------------
+--             TODO : ALTER TABLE         --
+--------------------------------------------
+ALTER TABLE identite
+    ADD CONSTRAINT unique_identite_per_user UNIQUE (nom, id_utilisateur);
+
+ALTER TABLE planning
+    DROP CONSTRAINT IF EXISTS fk_planning_calendrier;
+
+ALTER TABLE planning
+    ADD CONSTRAINT fk_planning_calendrier
+        FOREIGN KEY (id_calendrier)
+            REFERENCES calendrier(id_calendrier)
+            ON DELETE RESTRICT;
 
 --------------------------------------------
 --             TODO : TRIGGER             --

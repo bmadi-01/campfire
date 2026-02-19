@@ -1,4 +1,5 @@
 const planningService = require('../services/planning_service');
+const planningCalendarService = require('../services/planning_calendar_service');
 
 /**
  * Lire un planning
@@ -6,15 +7,17 @@ const planningService = require('../services/planning_service');
  */
 exports.getById = async (req, res) => {
     try {
-        const planning = await planningService.getById(
-            req.params.id_planning
-        );
 
-        res.status(200).json({
-            planning
+        const planning = await planningService.getById({
+            id_planning: req.params.id_planning,
+            id_utilisateur: req.user?.id || null,
+            isVisitor: !req.user
         });
+
+        res.status(200).json({ planning });
+
     } catch (error) {
-        res.status(404).json({
+        res.status(403).json({
             error: error.message
         });
     }
@@ -50,7 +53,7 @@ exports.update = async (req, res) => {
  */
 exports.getMyPlannings = async (req, res) => {
     try {
-        const plannings = await planningService.getByUser(
+        const plannings = await planningService.getPersonnalPlannings(
             req.user.id
         );
 
@@ -70,7 +73,7 @@ exports.getMyPlannings = async (req, res) => {
  */
 exports.getGroupPlannings = async (req, res) => {
     try {
-        const plannings = await planningService.getByGroup(
+        const plannings = await planningService.getGroupPlannings(
             req.params.id_groupe
         );
 

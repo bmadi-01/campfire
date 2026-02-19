@@ -51,7 +51,7 @@ exports.getByUtilisateur = async (id_utilisateur) => {
         throw new Error('Utilisateur introuvable');
     }
 
-    return await identiteRepository.findByUtilisateur(id_utilisateur);
+    return await identiteRepository.findWithGroupStatus(id_utilisateur);
 };
 
 /**

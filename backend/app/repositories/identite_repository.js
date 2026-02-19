@@ -53,6 +53,24 @@ exports.findByGroupe = async (id_groupe) => {
 };
 
 /**
+ * IDENTITÉS ASSIGNÉES OU NON
+ */
+exports.findWithGroupStatus = async (userId) => {
+    const { rows } = await db.query(`
+        SELECT i.*,
+        EXISTS (
+            SELECT 1
+            FROM role_groupe rg
+            WHERE rg.id_identite = i.id_identite
+        ) AS assigned
+        FROM identite i
+        WHERE i.id_utilisateur = $1
+    `, [userId]);
+
+    return rows;
+};
+
+/**
  * Met à jour le nom d’une identité
  */
 exports.update = async (id_identite, updates) => {

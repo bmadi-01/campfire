@@ -43,11 +43,11 @@ function GroupsModal({ onClose }: Props) {
 
     return (
         <>
-            <div className="modalOverlay">
-                <div className="modalContainer">
+            <div className="groupsModalOverlay">
+                <div className="groupsModalContainer">
 
                     {/* Bouton fermeture */}
-                    <div className="modalClose" onClick={onClose}>
+                    <div className="groupsModalClose" onClick={onClose}>
                         ✕
                     </div>
 

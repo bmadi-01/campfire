@@ -8,13 +8,10 @@ exports.findAll = async () => {
 /**
  * Alias MÉTIER → utilisé par le service
  */
-exports.create = async ({ id_groupe, id_planning }) => {
-    await db.query(
-        `
-        INSERT INTO possede (id_groupe, id_planning)
-        VALUES ($1, $2)
-        ON CONFLICT DO NOTHING
-        `,
+exports.create = async ({ id_groupe, id_planning }, client = db) => {
+    await client.query(
+        `INSERT INTO possede (id_groupe, id_planning)
+         VALUES ($1, $2)`,
         [id_groupe, id_planning]
     );
 
@@ -56,6 +53,21 @@ exports.exists = async (id_groupe, id_planning) => {
         [id_groupe, id_planning]
     );
     return rows.length > 0;
+};
+/**
+ * récupérer : Le groupe auquel appartient ce planning
+ */
+exports.findGroupeByPlanning = async (id_planning) => {
+    const { rows } = await db.query(
+        `
+        SELECT id_groupe
+        FROM possede
+        WHERE id_planning = $1
+        `,
+        [id_planning]
+    );
+
+    return rows[0] || null;
 };
 
 /**

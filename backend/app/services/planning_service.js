@@ -1,13 +1,17 @@
 const planningRepository = require('../repositories/planning_repository');
 const possedeRepository = require('../repositories/possede_repository');
 const roleGroupeRepository = require('../repositories/role_groupe_repository');
-const identiteRepository = require('../repositories/identite_repository');
+
+const calendarConfigRepo = require('../repositories/planning_calendar_config_repository');
+const calendarStateRepo = require('../repositories/planning_calendar_state_repository');
+const calendrierRepository = require('../repositories/calendrier_repository');
+
 
 /**
  * Récupère un planning par ID avec vérification de visibilité
  */
 exports.getById = async ({ id_planning, id_utilisateur = null, isVisitor = false }) => {
-    const planning = await planningRepository.findById(id_planning);
+    const planning = await planningRepository.findFullById(id_planning);
     if (!planning) {
         throw new Error('Planning introuvable');
     }
@@ -28,7 +32,10 @@ exports.getById = async ({ id_planning, id_utilisateur = null, isVisitor = false
     }
 
     // Planning de groupe → vérifier appartenance
+    // Gestion groupe à compléter si nécessaire
+
     const groupes = await possedeRepository.findPlanningsByGroupe;
+
     // L'appartenance sera vérifiée côté service appelant (événement / groupe)
 
     throw new Error('Accès refusé');
@@ -56,6 +63,48 @@ exports.createPersonalPlanning = async (planningData, id_utilisateur) => {
         ...planningData,
         id_utilisateur
     });
+};
+
+
+/**
+ * Création config si DIEGETIQUE.
+ */
+exports.createPlanning = async (planningData, id_utilisateur) => {
+
+    const planning = await planningRepository.createForUtilisateur({
+        ...planningData,
+        id_utilisateur
+    });
+
+    // Récupérer type du calendrier
+    const calendrier = await calendrierRepository.findById(
+        planning.id_calendrier
+    );
+
+    if (calendrier.type === 'DIEGETIQUE') {
+
+        if (!planningData.config) {
+            throw new Error('Configuration requise pour calendrier diégétique');
+        }
+
+        await calendarConfigRepo.create(
+            planning.id_planning,
+            planningData.config
+        );
+
+        await calendarStateRepo.create(
+            planning.id_planning,
+            {
+                annee: planningData.config.annee_debut || 1,
+                mois: 1,
+                jour: 1,
+                heure: 0,
+                minute: 0
+            }
+        );
+    }
+
+    return planning;
 };
 
 /**

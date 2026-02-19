@@ -14,7 +14,7 @@ exports.addPlanningToGroupe = async (id_groupe, id_planning) => {
     }
 
     // 2️ Vérifier planning
-    const planning = await planningRepository.findById(id_planning);
+    const planning = await planningRepository.findFullById(id_planning);
     if (!planning) {
         throw new Error('Planning introuvable');
     }

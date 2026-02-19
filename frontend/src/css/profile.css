@@ -131,15 +131,6 @@
 }
 
 /* =========================
-   ERROR TEXT
-========================= */
-.errorText {
-    color: #ff4d4f;
-    font-size: 0.8rem;
-    margin-top: 4px;
-}
-
-/* =========================
    RESPONSIVE
 ========================= */
 @media (max-width: 768px) {

@@ -20,7 +20,7 @@ exports.requirePlanningAccess = (mode = 'read') => {
                 });
             }
 
-            const planning = await planningRepository.findById(id_planning);
+            const planning = await planningRepository.findFullById(id_planning);
             if (!planning) {
                 return res.status(404).json({
                     message: 'Planning introuvable'
@@ -59,9 +59,11 @@ exports.requirePlanningAccess = (mode = 'read') => {
             }
 
             // 👥 PLANNING DE GROUPE
-            const id_identite = req.body.id_identite;
+            const id_identite =
+                req.body.id_identite ||
+                req.query.id_identite;
 
-            if (!id_identite) {
+            if (mode === 'write' && !id_identite) {
                 return res.status(400).json({
                     message: 'id_identite requis pour planning de groupe'
                 });
@@ -76,7 +78,7 @@ exports.requirePlanningAccess = (mode = 'read') => {
 
             const lienGroupe = await possedeRepository.findGroupeByPlanning(id_planning);
             if (!lienGroupe) {
-                return res.status(500).json({
+                return res.status(403).json({
                     message: 'Planning non lié à un groupe'
                 });
             }

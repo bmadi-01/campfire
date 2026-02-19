@@ -1,4 +1,7 @@
 // backend/app/repositories/planning_repository.js
+const calendarConfigRepo = require('./planning_calendar_config_repository');
+const calendarStateRepo = require('./planning_calendar_state_repository');
+
 const db = require('../driver_connex_db');
 
 /**
@@ -21,6 +24,42 @@ exports.findById = async (id_planning) => {
         [id_planning]
     );
     return rows[0] || null;
+};
+
+exports.findFullById = async (id_planning) => {
+
+    const { rows } = await db.query(
+        `SELECT
+             p.*,
+             c.type AS calendrier_type
+         FROM planning p
+                  JOIN calendrier c
+                       ON c.id_calendrier = p.id_calendrier
+         WHERE p.id_planning = $1`,
+        [id_planning]
+    );
+
+    const planning = rows[0];
+    if (!planning) return null;
+
+    if (planning.calendrier_type === 'DIEGETIQUE') {
+
+        planning.calendar = {
+            type: planning.calendrier_type,
+            config: await calendarConfigRepo.findByPlanning(id_planning),
+            state: await calendarStateRepo.findByPlanning(id_planning)
+        };
+
+    } else {
+
+        planning.calendar = {
+            type: planning.calendrier_type
+        };
+    }
+
+    delete planning.calendrier_type;
+
+    return planning;
 };
 
 /**
@@ -91,10 +130,10 @@ exports.createForUtilisateur = async (planning) => {
 /**
  * Crée un planning de groupe
  * @param {Object} planning
- * @param {number} id_groupe
+ * @param client
  * @returns {Promise<Object>}
  */
-exports.createForGroupe = async (planning, id_groupe) => {
+exports.create = async (planning, client = db) => {
     const {
         nom,
         public: isPublic,
@@ -104,36 +143,15 @@ exports.createForGroupe = async (planning, id_groupe) => {
         id_utilisateur
     } = planning;
 
-    const client = await db.connect();
+    const { rows } = await client.query(
+        `INSERT INTO planning
+         (nom, public, date_, heure, id_calendrier, id_utilisateur)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING *`,
+        [nom, isPublic, date_, heure, id_calendrier, id_utilisateur]
+    );
 
-    try {
-        await client.query('BEGIN');
-
-        const { rows } = await client.query(
-            `INSERT INTO planning
-                (nom, public, date_, heure, id_calendrier, id_utilisateur)
-             VALUES ($1, $2, $3, $4, $5, $6)
-             RETURNING *`,
-            [nom, isPublic, date_, heure, id_calendrier, id_utilisateur]
-        );
-
-        const planningCree = rows[0];
-
-        await client.query(
-            `INSERT INTO possede (id_groupe, id_planning)
-             VALUES ($1, $2)`,
-            [id_groupe, planningCree.id_planning]
-        );
-
-        await client.query('COMMIT');
-        return planningCree;
-
-    } catch (error) {
-        await client.query('ROLLBACK');
-        throw error;
-    } finally {
-        client.release();
-    }
+    return rows[0];
 };
 
 /**

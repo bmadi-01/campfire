@@ -169,6 +169,15 @@ function Profile() {
 
     if (!user) return null;
 
+    const avatars = [
+        "avatar1.jpg",
+        "avatar2.jpg",
+        "avatar3.jpg",
+        "avatar4.jpg",
+        "avatar5.jpg",
+        "avatar6.jpg"
+    ];
+
     return (
         <>
             <NavBarConnecte />
@@ -180,26 +189,24 @@ function Profile() {
                     <h2>Mon Profil 🔥</h2>
 
                     {/* AVATAR */}
-                    <div className="avatarSection">
-                        <img
-                            src={`/avatars/${avatar}`}
-                            alt="avatar"
-                            className="avatarImage"
-                        />
+                    <img
+                        src={`/avatar/${avatar}`}
+                        alt="avatar"
+                        className="avatarImage"
+                    />
 
-                        <div className="avatarChoices">
-                            {["avatar1.png", "avatar2.png", "avatar3.png"].map((img) => (
-                                <img
-                                    key={img}
-                                    src={`/avatars/${img}`}
-                                    alt={img}
-                                    onClick={() => {
-                                        setAvatar(img);
-                                        localStorage.setItem("avatar", img);
-                                    }}
-                                />
-                            ))}
-                        </div>
+                    <div className="avatarChoices">
+                        {avatars.map((img) => (
+                            <img
+                                key={img}
+                                src={`/avatar/${img}`}
+                                alt={img}
+                                onClick={() => {
+                                    setAvatar(img);
+                                    localStorage.setItem("avatar", img);
+                                }}
+                            />
+                        ))}
                     </div>
 
                     {/* INFOS */}
@@ -279,6 +286,12 @@ function Profile() {
                     <div className="identiteSection">
                         <h3>Mes Identités</h3>
 
+                        {identites.map((id) => (
+                            <div key={id.id_identite}>
+                                {id.nom}
+                                {id.assigned ? " 🔥 Assignée à un groupe" : " Disponible"}
+                            </div>
+                        ))}
                         {identites.map((id, index) => (
                             <p key={index}>{id.nom}</p>
                         ))}

@@ -1,4 +1,4 @@
-.modalOverlay {
+.groupsModalOverlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.75);
@@ -9,7 +9,7 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.modalContainer {
+.groupsModalContainer {
     width: 100%;
     max-width: 500px;
     background: #1a1a1f;
@@ -20,7 +20,7 @@
     border: 1px solid rgba(255, 159, 67, 0.2);
 }
 
-.modalClose {
+.groupsModalClose {
     position: absolute;
     top: 15px;
     right: 20px;
@@ -30,7 +30,7 @@
     transition: 0.3s ease;
 }
 
-.modalClose:hover {
+.groupsModalClose:hover {
     transform: rotate(90deg);
 }
 

@@ -138,7 +138,12 @@ function Dashboard() {
             </div>
 
             {isGroupsOpen && (
-                <GroupsModal onClose={() => setIsGroupsOpen(false)} />
+                <GroupsModal
+                    onClose={() => {
+                        setIsGroupsOpen(false);
+                        fetchGroupes(localStorage.getItem("token") || "");
+                    }}
+                />
             )}
         </>
     );
