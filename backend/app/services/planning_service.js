@@ -8,37 +8,67 @@ const calendrierRepository = require('../repositories/calendrier_repository');
 
 
 /**
- * Récupère un planning par ID avec vérification de visibilité
+ * Récupère un planning avec vérification visibilité
  */
-exports.getById = async ({ id_planning, id_utilisateur = null, isVisitor = false }) => {
-    const planning = await planningRepository.findFullById(id_planning);
+exports.getById = async ({
+                             id_planning,
+                             id_utilisateur = null,
+                             isVisitor = false
+                         }) => {
+
+    const planning =
+        await planningRepository.findFullById(id_planning);
+
     if (!planning) {
         throw new Error('Planning introuvable');
     }
 
-    // Public → visible par tous
+    // =========================
+    // PUBLIC → tout le monde
+    // =========================
     if (planning.public) {
         return planning;
     }
 
-    // Privé + visiteur → interdit
+    // =========================
+    // VISITEUR → refus
+    // =========================
     if (isVisitor) {
         throw new Error('Accès refusé');
     }
 
-    // Planning personnel
+    // =========================
+    // PLANNING PERSONNEL
+    // =========================
     if (planning.id_utilisateur === id_utilisateur) {
         return planning;
     }
 
-    // Planning de groupe → vérifier appartenance
-    // Gestion groupe à compléter si nécessaire
+    // =========================
+    // PLANNING DE GROUPE
+    // =========================
 
-    const groupes = await possedeRepository.findPlanningsByGroupe;
+    const lien =
+        await possedeRepository.findGroupeByPlanning(
+            id_planning
+        );
 
-    // L'appartenance sera vérifiée côté service appelant (événement / groupe)
+    if (!lien) {
+        throw new Error('Accès refusé');
+    }
 
-    throw new Error('Accès refusé');
+    const role =
+        await roleGroupeRepository.findByUser(
+            lien.id_groupe,
+            id_utilisateur
+        );
+
+    if (!role) {
+        throw new Error('Accès refusé : non membre du groupe');
+    }
+
+    // MEMBRE ou ORGANISATEUR peuvent lire
+    return planning;
 };
 
 /**
@@ -71,31 +101,94 @@ exports.createPersonalPlanning = async (planningData, id_utilisateur) => {
  */
 exports.createPlanning = async (planningData, id_utilisateur) => {
 
+    const {
+        nom,
+        public: isPublic,
+        type,
+        id_groupe = null,
+        config = null
+    } = planningData;
+
+    if (!nom) {
+        throw new Error('Nom requis');
+    }
+
+    // =========================
+    // Trouver calendrier
+    // =========================
+
+    const calendrier = await calendrierRepository.findByType(type);
+
+    if (!calendrier) {
+        throw new Error('Type calendrier invalide');
+    }
+
+    // =========================
+    // Si groupe → vérifier ORGANISATEUR
+    // =========================
+
+    if (id_groupe) {
+
+        const role = await roleGroupeRepository.findByUser(
+            id_groupe,
+            id_utilisateur
+        );
+
+        if (!role || role.level_nom !== 'ORGANISATEUR') {
+            throw new Error(
+                'Seul un ORGANISATEUR peut créer un planning de groupe'
+            );
+        }
+    }
+
+    // =========================
+    // Créer planning
+    // =========================
+
     const planning = await planningRepository.createForUtilisateur({
-        ...planningData,
+        nom,
+        public: false,
+        date_: new Date(),
+        heure: new Date(),
+        id_calendrier: calendrier.id_calendrier,
         id_utilisateur
     });
 
-    // Récupérer type du calendrier
-    const calendrier = await calendrierRepository.findById(
-        planning.id_calendrier
-    );
+    // =========================
+    // Si groupe → créer liaison possede
+    // =========================
+
+    if (id_groupe) {
+
+        await possedeRepository.create(
+            {
+                id_groupe,
+                id_planning: planning.id_planning
+            }
+        );
+    }
+
+    // =========================
+    // Si DIEGETIQUE → créer config + state
+    // =========================
 
     if (calendrier.type === 'DIEGETIQUE') {
 
-        if (!planningData.config) {
-            throw new Error('Configuration requise pour calendrier diégétique');
+        if (!config) {
+            throw new Error(
+                'Configuration requise pour calendrier diégétique'
+            );
         }
 
         await calendarConfigRepo.create(
             planning.id_planning,
-            planningData.config
+            config
         );
 
         await calendarStateRepo.create(
             planning.id_planning,
             {
-                annee: planningData.config.annee_debut || 1,
+                annee: config.annee_debut || 1,
                 mois: 1,
                 jour: 1,
                 heure: 0,

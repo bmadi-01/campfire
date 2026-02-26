@@ -13,7 +13,7 @@ const CALENDRIERS = [
 
 async function seedCalendriers() {
     try {
-        console.log('📅 Seed des calendriers en cours...');
+        console.log('Seed des calendriers en cours...');
 
         for (const calendrier of CALENDRIERS) {
             const { rows } = await db.query(
@@ -33,7 +33,7 @@ async function seedCalendriers() {
             }
         }
 
-        console.log('🎉 Seed des calendriers terminé');
+        console.log('Seed des calendriers terminé');
         process.exit(0);
 
     } catch (error) {

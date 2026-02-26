@@ -31,7 +31,7 @@ exports.findFullById = async (id_planning) => {
     const { rows } = await db.query(
         `SELECT
              p.*,
-             c.type AS calendrier_type
+             c.type_calendrier AS calendrier_type
          FROM planning p
                   JOIN calendrier c
                        ON c.id_calendrier = p.id_calendrier

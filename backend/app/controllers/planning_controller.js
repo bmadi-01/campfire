@@ -24,6 +24,31 @@ exports.getById = async (req, res) => {
 };
 
 /**
+ * Crée un planning
+ * POST /plannings
+ */
+exports.create = async (req, res) => {
+    try {
+
+        const planning =
+            await planningService.createPlanning(
+                req.body,
+                req.user.id
+            );
+
+        res.status(201).json({
+            message: 'Planning créé avec succès',
+            planning
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        });
+    }
+};
+
+/**
  * Mettre à jour un planning
  * PUT /plannings/:id_planning
  */
@@ -49,7 +74,7 @@ exports.update = async (req, res) => {
 
 /**
  * Lister les plannings de l'utilisateur connecté
- * GET /plannings/me
+ * GET /plannings/me/list
  */
 exports.getMyPlannings = async (req, res) => {
     try {

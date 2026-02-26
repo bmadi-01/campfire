@@ -51,6 +51,7 @@ router.post('/:id_planning/calendar/advance', authenticate, requirePlanningAcces
 router.get('/me/list', authenticate, planningController.getMyPlannings);
 router.get('/groupe/:id_groupe', authenticate, requireGroupMember, planningController.getGroupPlannings);
 router.get('/:id_planning', requirePlanningAccess('read'), planningController.getById);
+router.post('/', authenticate, planningController.create);
 router.put('/:id_planning', authenticate, requirePlanningAccess('write'), planningController.update);
 
 module.exports = router;

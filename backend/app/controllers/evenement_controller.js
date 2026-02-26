@@ -10,9 +10,7 @@ exports.getById = async (req, res) => {
             req.params.id_evenement
         );
 
-        res.status(200).json({
-            evenement
-        });
+        res.status(200).json({evenement});
     } catch (error) {
         res.status(404).json({
             error: error.message
@@ -28,7 +26,6 @@ exports.create = async (req, res) => {
     try {
         const evenement = await evenementService.create(
             req.body,
-            req.user.id
         );
 
         res.status(201).json({

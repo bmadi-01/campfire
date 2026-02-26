@@ -27,7 +27,7 @@ exports.requirePlanningAccess = (mode = 'read') => {
                 });
             }
 
-            // 🔓 PLANNING PUBLIC → lecture libre
+            // PLANNING PUBLIC → lecture libre
             if (planning.public && mode === 'read') {
                 req.planningContext = {
                     id_planning,
@@ -36,14 +36,14 @@ exports.requirePlanningAccess = (mode = 'read') => {
                 return next();
             }
 
-            // 🔒 Auth obligatoire à partir d’ici
+            // Auth obligatoire à partir d’ici
             if (!req.user) {
                 return res.status(401).json({
                     message: 'Authentification requise'
                 });
             }
 
-            // 🧍 PLANNING PERSONNEL
+            // PLANNING PERSONNEL
             if (planning.id_utilisateur) {
                 if (planning.id_utilisateur !== req.user.id) {
                     return res.status(403).json({
@@ -58,7 +58,7 @@ exports.requirePlanningAccess = (mode = 'read') => {
                 return next();
             }
 
-            // 👥 PLANNING DE GROUPE
+            // PLANNING DE GROUPE
             const id_identite =
                 req.body.id_identite ||
                 req.query.id_identite;
@@ -94,7 +94,7 @@ exports.requirePlanningAccess = (mode = 'read') => {
                 });
             }
 
-            // ✏️ Écriture réservée aux ORGANISATEURS
+            // Écriture réservée aux ORGANISATEURS
             if (mode === 'write' && roleGroupe.level_nom !== 'ORGANISATEUR') {
                 return res.status(403).json({
                     message: 'Modification réservée aux organisateurs'

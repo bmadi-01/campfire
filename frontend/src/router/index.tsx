@@ -4,7 +4,7 @@ import HomePage from "../pages/homePage";
 import RegisterPage from "../pages/registerPage";
 import LoginPage from "../pages/loginPage";
 import GroupePage from "../pages/groupePage";
-import PlanningPage from "../pages/panningPage"
+import PlanningPage from "../pages/planningPage.tsx"
 import PrivateRoute from "./privateRoute";
 import Dashboard from "../pages/dashboard"
 import Profile from "../pages/profile.tsx";
@@ -33,6 +33,7 @@ export default function AppRouter() {
 
                 {/* TODO : Page pour le planning */}
                 <Route path={"/planning"} element={ <PlanningPage /> } />
+                <Route path="/planning/:id" element={<PlanningPage />} />
 
                 {/* TODO : Page pour le dashboard */}
                 <Route path="/dashboard" element={

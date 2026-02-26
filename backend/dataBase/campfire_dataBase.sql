@@ -20,8 +20,8 @@ DROP TABLE IF EXISTS calendrier CASCADE;
 
 CREATE TABLE calendrier (
     id_calendrier SERIAL PRIMARY KEY,
-    type VARCHAR(50) NOT NULL UNIQUE
-        CHECK (type IN ('GREGORIEN', 'DIEGETIQUE'))
+    type_calendrier VARCHAR(50) NOT NULL UNIQUE
+        CHECK (type_calendrier IN ('GREGORIEN', 'DIEGETIQUE'))
 );
 
 CREATE TABLE IF NOT EXISTS level (
@@ -73,6 +73,22 @@ CREATE TABLE IF NOT EXISTS evenement (
     id_planning INTEGER NOT NULL,
     CONSTRAINT fk_evenement_planning
     FOREIGN KEY (id_planning) REFERENCES planning(id_planning)
+    ON DELETE CASCADE,
+
+    -- Pour GREGORIEN
+    date_debut TIMESTAMP,
+     date_fin TIMESTAMP,
+    -- Pour DIEGETIQUE
+    annee INTEGER,
+    mois INTEGER,
+    jour INTEGER,
+    heure INTEGER,
+    minute INTEGER,
+    CHECK (
+        (date_debut IS NOT NULL AND annee IS NULL)
+            OR
+        (date_debut IS NULL AND annee IS NOT NULL)
+        )
     );
 
 CREATE TABLE IF NOT EXISTS identite (

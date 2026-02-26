@@ -1,8 +1,11 @@
-import axios from "axios"
-
-const API = import.meta.env.VITE_API_URL
+import api from "./api"
 
 export const getPlanning = async (id: number) => {
-    const res = await axios.get(`${API}/plannings/${id}`)
+    const res = await api.get(`/plannings/${id}`)
+    return res.data.planning
+}
+
+export const createPlanning = async (data: any) => {
+    const res = await api.post(`/plannings`, data)
     return res.data.planning
 }

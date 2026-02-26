@@ -50,6 +50,23 @@ exports.findByGroupe = async (id_groupe) => {
     return rows;
 };
 
+exports.findByUser = async (id_groupe, id_utilisateur) => {
+
+    const { rows } = await db.query(
+        `
+            SELECT rg.*, l.nom AS level_nom
+            FROM role_groupe rg
+                     JOIN identite i ON i.id_identite = rg.id_identite
+                     JOIN level l ON l.id_level = rg.id_level
+            WHERE rg.id_groupe = $1
+              AND i.id_utilisateur = $2
+        `,
+        [id_groupe, id_utilisateur]
+    );
+
+    return rows[0] || null;
+};
+
 /**
  * Change le niveau d’un membre dans un groupe
  */

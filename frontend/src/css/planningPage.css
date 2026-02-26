@@ -1,0 +1,213 @@
+/* ========================= */
+/* GLOBAL PLANNING LAYOUT */
+/* ========================= */
+
+.planning-page {
+    min-height: 100vh;
+    padding: 2rem 3rem;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #f1f5f9;
+    font-family: "Inter", sans-serif;
+}
+
+/* ========================= */
+/* HEADER */
+/* ========================= */
+
+.planning-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.planning-title {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.planning-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.badge-gregorien {
+    background: #3b82f6;
+    color: white;
+}
+
+.badge-diegetique {
+    background: #8b5cf6;
+    color: white;
+}
+
+/* ========================= */
+/* ACTION BUTTONS */
+/* ========================= */
+
+.planning-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.planning-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #6366f1;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #4f46e5;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+/* ========================= */
+/* CALENDAR CONTAINER */
+/* ========================= */
+
+.calendar-container {
+    background: #1e293b;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* ========================= */
+/* FULLCALENDAR OVERRIDES */
+/* ========================= */
+
+.fc {
+    background-color: #1e293b;
+    color: #f1f5f9;
+}
+
+.fc-toolbar-title {
+    font-size: 1.4rem !important;
+    font-weight: 600;
+}
+
+.fc-button {
+    background-color: #334155 !important;
+    border: none !important;
+    border-radius: 6px !important;
+}
+
+.fc-button:hover {
+    background-color: #475569 !important;
+}
+
+.fc-daygrid-day {
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.fc-event {
+    background-color: #6366f1 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 2px 4px;
+    font-size: 0.75rem;
+}
+
+/* ========================= */
+/* DIEGETIC CALENDAR STYLE */
+/* ========================= */
+
+.diegetic-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+}
+
+.diegetic-time {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.diegetic-date {
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.diegetic-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.diegetic-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    background: #7c3aed;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.diegetic-btn:hover {
+    background: #6d28d9;
+}
+
+/* ========================= */
+/* LOADING / ERROR */
+/* ========================= */
+
+.planning-loading,
+.planning-error {
+    text-align: center;
+    padding: 4rem;
+    font-size: 1.2rem;
+}
+
+.planning-error {
+    color: #ef4444;
+}
+.planning-empty {
+    text-align: center;
+    padding: 3rem;
+    opacity: 0.7;
+}
+
+/* ========================= */
+/* RESPONSIVE */
+/* ========================= */
+
+@media (max-width: 768px) {
+
+    .planning-page {
+        padding: 1rem;
+    }
+
+    .planning-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .calendar-container {
+        padding: 1rem;
+    }
+}

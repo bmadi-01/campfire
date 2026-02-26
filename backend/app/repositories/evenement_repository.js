@@ -34,22 +34,91 @@ exports.findByPlanning = async (id_planning) => {
 };
 
 /**
- * Vérifie s'il existe déjà un événement à la même date/heure
- * sur un planning donné (utile pour éviter les conflits)
+ * Vérifie s’il existe un conflit de date pour un planning grégorien.
+ *
+ * Conflit si :
+ * - un événement commence dans un intervalle déjà occupé
+ * - ou chevauche un événement existant
+ *
+ * @param {number} id_planning
+ * @param {Date|string} date_debut
+ * @param {Date|string|null} date_fin
+ * @returns {boolean}
  */
-exports.existsAtSameTime = async (id_planning, date_, heure) => {
+exports.existsGregorianConflict = async (
+    id_planning,
+    date_debut,
+    date_fin = null
+) => {
+
     const { rows } = await db.query(
-        `SELECT e.id_evenement
-         FROM evenement e
-         JOIN planning p ON p.id_planning = e.id_planning
-         WHERE p.id_planning = $1
-           AND p.date_ = $2
-           AND p.heure = $3`,
-        [id_planning, date_, heure]
+        `
+        SELECT 1
+        FROM evenement
+        WHERE id_planning = $1
+          AND date_debut IS NOT NULL
+          AND (
+                (date_debut <= $2 AND (date_fin IS NULL OR date_fin > $2))
+             OR ($3 IS NOT NULL AND date_debut < $3)
+          )
+        LIMIT 1
+        `,
+        [id_planning, date_debut, date_fin]
     );
 
     return rows.length > 0;
 };
+
+/**
+ * Vérifie s’il existe un conflit pour un planning diégétique.
+ *
+ * Conflit si un événement existe déjà
+ * à la même date et même heure.
+ *
+ * @param {number} id_planning
+ * @param {number} annee
+ * @param {number} mois
+ * @param {number} jour
+ * @param {number|null} heure
+ * @param {number|null} minute
+ * @returns {boolean}
+ */
+exports.existsDiegeticConflict = async (
+    id_planning,
+    annee,
+    mois,
+    jour,
+    heure = null,
+    minute = null
+) => {
+
+    const { rows } = await db.query(
+        `
+        SELECT 1
+        FROM evenement
+        WHERE id_planning = $1
+          AND annee = $2
+          AND mois = $3
+          AND jour = $4
+          AND (
+                (heure = $5 AND minute = $6)
+             OR ($5 IS NULL)
+          )
+        LIMIT 1
+        `,
+        [
+            id_planning,
+            annee,
+            mois,
+            jour,
+            heure,
+            minute
+        ]
+    );
+
+    return rows.length > 0;
+};
+
 
 /**
  * Crée un événement
@@ -57,17 +126,49 @@ exports.existsAtSameTime = async (id_planning, date_, heure) => {
  * @returns {Promise<Object>}
  */
 exports.create = async (evenement) => {
+
     const {
         titre,
         description,
-        id_planning
+        id_planning,
+        date_debut = null,
+        date_fin = null,
+        annee = null,
+        mois = null,
+        jour = null,
+        heure = null,
+        minute = null
     } = evenement;
 
     const { rows } = await db.query(
-        `INSERT INTO evenement (titre, description, id_planning)
-         VALUES ($1, $2, $3)
-         RETURNING *`,
-        [titre, description, id_planning]
+        `
+            INSERT INTO evenement (
+                titre,
+                description,
+                id_planning,
+                date_debut,
+                date_fin,
+                annee,
+                mois,
+                jour,
+                heure,
+                minute
+            )
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+                RETURNING *
+        `,
+        [
+            titre,
+            description,
+            id_planning,
+            date_debut,
+            date_fin,
+            annee,
+            mois,
+            jour,
+            heure,
+            minute
+        ]
     );
 
     return rows[0];

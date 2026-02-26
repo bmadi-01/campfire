@@ -1,98 +1,175 @@
 const evenementRepository = require('../repositories/evenement_repository');
 const planningRepository = require('../repositories/planning_repository');
-const possedeRepository = require('../repositories/possede_repository');
-const roleGroupeRepository = require('../repositories/role_groupe_repository');
-const identiteRepository = require('../repositories/identite_repository');
+const calendrierRepository = require('../repositories/calendrier_repository');
 
 /**
- * Crée un événement
- * - personnel
- * - ou synchronisé avec un groupe
+ * =========================================
+ *             CREATE ÉVÉNEMENT
+ * =========================================
+ * Règles :
+ * - L’événement appartient à un planning via id_planning
+ * - L’événement possède sa propre date
+ * - Le planning ne contient PAS la date des événements
+ * - Le planning définit seulement moteur / monde / permissions
  */
 exports.create = async ({
                             titre,
                             description,
                             id_planning,
-                            id_identite = null
+                            date_debut = null,
+                            date_fin = null,
+                            annee = null,
+                            mois = null,
+                            jour = null,
+                            heure = null,
+                            minute = null
                         }) => {
-    // 1️ Vérifier planning
-    const planning = await planningRepository.findById(id_planning);
+
+    // Vérifier planning
+    const planning =
+        await planningRepository.findById(id_planning);
+
     if (!planning) {
         throw new Error('Planning introuvable');
     }
 
-    // 2️ Création événement personnel (toujours)
-    const eventPersonnel = await evenementRepository.create({
-        titre,
-        description,
-        id_planning
-    });
+    // Vérifier moteur calendrier
+    const calendrier =
+        await calendrierRepository.findById(
+            planning.id_calendrier
+        );
 
-    // 3️ Vérifier si le planning appartient à un groupe
-    const planningsGroupe = await possedeRepository.findPlanningsByGroupe;
-    let isGroupPlanning = false;
-
-    // ⚠️ La détection réelle se fait via le service appelant
-    // Ici on suppose que id_identite != null => contexte groupe
-
-    if (!id_identite) {
-        return { personnel: eventPersonnel };
+    if (!calendrier) {
+        throw new Error('Calendrier introuvable');
     }
 
-    // 4️ Vérifier identité
-    const identite = await identiteRepository.findById(id_identite);
-    if (!identite) {
-        throw new Error('Identité introuvable');
+    // =================================
+    //  GREGORIEN
+    // =================================
+    if (calendrier.type === 'GREGORIEN') {
+
+        if (!date_debut) {
+            throw new Error(
+                'date_debut requis pour événement grégorien'
+            );
+        }
+
+        // Vérifier conflit
+        if (evenementRepository.existsGregorianConflict) {
+            const conflict =
+                await evenementRepository.existsGregorianConflict(
+                    id_planning,
+                    date_debut
+                );
+
+            if (conflict) {
+                throw new Error('Conflit horaire détecté');
+            }
+        }
+
+        return await evenementRepository.create({
+            titre,
+            description,
+            id_planning,
+            date_debut,
+            date_fin
+        });
     }
 
-    // 5️ Récupérer rôle dans le groupe
-    const role = await roleGroupeRepository.findOne(
-        planning.id_groupe,
-        id_identite
-    );
+    // =================================
+    //  DIEGETIQUE
+    // =================================
+    if (calendrier.type === 'DIEGETIQUE') {
 
-    if (!role || !['ORGANISATEUR', 'MEMBRE'].includes(role.level_nom)) {
-        throw new Error('Permission insuffisante pour créer un événement');
+        if (
+            annee == null ||
+            mois == null ||
+            jour == null
+        ) {
+            throw new Error('Date diégétique incomplète');
+        }
+
+        if (evenementRepository.existsDiegeticConflict) {
+            const conflict =
+                await evenementRepository.existsDiegeticConflict(
+                    id_planning,
+                    annee,
+                    mois,
+                    jour,
+                    heure,
+                    minute
+                );
+
+            if (conflict) {
+                throw new Error('Conflit horaire détecté');
+            }
+        }
+
+        return await evenementRepository.create({
+            titre,
+            description,
+            id_planning,
+            annee,
+            mois,
+            jour,
+            heure,
+            minute
+        });
     }
 
-    // 6️ Vérifier conflit horaire dans le groupe
-    const conflict = await evenementRepository.existsAtSameTime(
-        planning.id_planning,
-        planning.date_,
-        planning.heure
-    );
-
-    if (conflict) {
-        throw new Error('Conflit : un événement existe déjà à ce créneau');
-    }
-
-    // 7️ Créer événement groupe
-    const eventGroupe = await evenementRepository.create({
-        titre,
-        description,
-        id_planning
-    });
-
-    return {
-        personnel: eventPersonnel,
-        groupe: eventGroupe
-    };
+    throw new Error('Type calendrier inconnu');
 };
 
 /**
  * Récupère les événements d’un planning
  */
 exports.getByPlanning = async (id_planning) => {
-    return await evenementRepository.findByPlanning(id_planning);
+
+    const planning =
+        await planningRepository.findById(id_planning);
+
+    if (!planning) {
+        throw new Error('Planning introuvable');
+    }
+
+    return await evenementRepository.findByPlanning(
+        id_planning
+    );
+};
+/**
+ * Récupère les événements vis à son ID
+ */
+exports.getById = async (id_evenement) => {
+
+    const evenement =
+        await evenementRepository.findById(id_evenement);
+
+    if (!evenement) {
+        throw new Error('Événement introuvable');
+    }
+
+    return evenement;
 };
 
 /**
  * Met à jour un événement
  */
 exports.update = async (id_evenement, updates) => {
-    const allowedFields = ['titre', 'description'];
+
+    const allowedFields = [
+        'titre',
+        'description',
+        'date_debut',
+        'date_fin',
+        'annee',
+        'mois',
+        'jour',
+        'heure',
+        'minute'
+    ];
 
     const safeUpdates = {};
+
     for (const key of allowedFields) {
         if (updates[key] !== undefined) {
             safeUpdates[key] = updates[key];
@@ -103,7 +180,10 @@ exports.update = async (id_evenement, updates) => {
         throw new Error('Aucune donnée valide à mettre à jour');
     }
 
-    return await evenementRepository.update(id_evenement, safeUpdates);
+    return await evenementRepository.update(
+        id_evenement,
+        safeUpdates
+    );
 };
 
 /**
