@@ -10,7 +10,7 @@ app.use(express.json());
 app.get("/health", (req, res) => {
     res.status(200).json({
         status: "OK",
-        app: "Campfire API 🔥",
+        app: "Campfire API",
         timestamp: new Date().toISOString()
     });
 });
@@ -32,7 +32,7 @@ app.use('/possede', require('./routes/possede_routes'));
 
 app.use((req, res) => {
     res.status(404).json({
-        error: 'Route non trouvée'
+        error: 'road not found'
     });
 });
 

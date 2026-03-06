@@ -1,5 +1,7 @@
 // backend/scripts/seed_calendrier.js
 //require('dotenv').config();
+// Lancer le sript = node /chemin/seed_calendrier.js
+
 const db = require('../app/driver_connex_db');
 
 const CALENDRIERS = [
@@ -27,9 +29,10 @@ async function seedCalendriers() {
                     [calendrier.type_calendrier]
                 );
 
-                console.log(`✅ Calendrier créé : ${calendrier.type_calendrier}`);
+                // code couleur \x1b[00m texte \x1b[0m
+                console.log(`\x1b[32mCalendrier créé : ${calendrier.type_calendrier}\x1b[0m`);
             } else {
-                console.log(`ℹ️ Calendrier déjà existant : ${calendrier.type_calendrier}`);
+                console.log(`\x1b[34mCalendrier déjà existant : ${calendrier.type_calendrier}\x1b[0m`);
             }
         }
 
@@ -37,7 +40,7 @@ async function seedCalendriers() {
         process.exit(0);
 
     } catch (error) {
-        console.error('❌ Erreur seed calendriers :', error.message);
+        console.error(`\x1b[31mErreur seed calendriers : ${error.message}\x1b[0m`);
         process.exit(1);
     }
 }

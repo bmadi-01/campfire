@@ -66,5 +66,4 @@ async function seedRolesAndAdmin() {
         process.exit(1);
     }
 }
-
 seedRolesAndAdmin();

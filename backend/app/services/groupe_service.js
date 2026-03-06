@@ -30,25 +30,25 @@ exports.create = async ({ nom, description, id_identite }, userId) => {
     try {
         // await client.query('BEGIN');
 
-        // 1️⃣ Vérifier utilisateur
+        // 1 Vérifier utilisateur
         const utilisateur = await utilisateurRepository.findById(userId);
         if (!utilisateur) {
             throw new Error('Utilisateur introuvable');
         }
 
-        // 2️⃣ Vérifier nom unique
+        // 2 Vérifier nom unique
         const existingGroup = await groupeRepository.findByName(nom);
         if (existingGroup) {
             throw new Error('Le nom de ce groupe existe déjà');
         }
 
-        // 3️⃣ Vérifier identité existante
+        // 3 Vérifier identité existante
         const identite = await identiteRepository.findById(id_identite);
         if (!identite || identite.id_utilisateur !== userId) {
             throw new Error('Identité invalide');
         }
 
-        // 4️⃣ Créer groupe (avec transaction)
+        // 4 Créer groupe (avec transaction)
         const groupe = await client.query(
             `INSERT INTO groupe (nom, description, date_creation)
              VALUES ($1, $2, $3)
@@ -61,13 +61,13 @@ exports.create = async ({ nom, description, id_identite }, userId) => {
         console.log("ID GROUPE:", groupeCree.id_groupe);
 
 
-        // 5️⃣ Récupérer calendrier GREGORIEN par défaut
+        // 5 Récupérer calendrier GREGORIEN par défaut
         const calendrier = await calendrierRepository.findByType('GREGORIEN');
         if (!calendrier) {
             throw new Error('Calendrier GREGORIEN introuvable');
         }
 
-        // 6️⃣ Créer planning public
+        // 6 Créer planning public
         const planningPublic = await planningRepository.create(
             {
                 nom: `${nom} - public`,
@@ -80,7 +80,7 @@ exports.create = async ({ nom, description, id_identite }, userId) => {
             client
         );
 
-        // 7️⃣ Créer planning privé
+        // 7 Créer planning privé
         const planningPrive = await planningRepository.create(
             {
                 nom: `${nom} - privé`,
@@ -93,7 +93,7 @@ exports.create = async ({ nom, description, id_identite }, userId) => {
             client
         );
 
-        // 8️⃣ Lier plannings au groupe
+        // 8 Lier plannings au groupe
         await possedeRepository.create(
             { id_groupe: groupeCree.id_groupe, id_planning: planningPublic.id_planning },
             client
@@ -104,13 +104,13 @@ exports.create = async ({ nom, description, id_identite }, userId) => {
             client
         );
 
-        // 9️⃣ Récupérer niveau ORGANISATEUR
+        // 9 Récupérer niveau ORGANISATEUR
         const level = await levelRepository.findByName('ORGANISATEUR');
         if (!level) {
             throw new Error('Niveau ORGANISATEUR introuvable');
         }
 
-        // 🔟 Assigner rôle à l'identité EXISTANTE
+        // 10 Assigner rôle à l'identité EXISTANTE
         await roleGroupeRepository.addToGroupe(
             {
                 id_groupe: groupeCree.id_groupe,

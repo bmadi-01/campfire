@@ -7,7 +7,11 @@ const {requireGroupMember} = require('../middlewares/requireGroupMember');
 const {requireGroupOrganisateur} = require('../middlewares/requireGroupOrganisateur');
 
 router.get('/:id_groupe/members', authenticate,requireGroupMember,roleGroupeController.getMembers);
-router.put('/:id_groupe/members/:id_identite',authenticate,requireGroupMember,requireGroupOrganisateur,roleGroupeController.updateRole);
-router.delete('/:id_groupe/members/:id_identite', authenticate, requireGroupMember, requireGroupOrganisateur,roleGroupeController.remove);
+router.put('/:id_groupe/members/:id_identite',authenticate,requireGroupMember,requireGroupOrganisateur,
+    roleGroupeController.updateRole
+);
+router.delete('/:id_groupe/members/:id_identite', authenticate, requireGroupMember, requireGroupOrganisateur,
+    roleGroupeController.remove
+);
 
 module.exports = router;

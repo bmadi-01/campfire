@@ -8,13 +8,13 @@ router.get('/', calendrierController.getAll);
 router.get('/:id_calendrier', calendrierController.getById);
 
 /**
- * ❌ Optionnel : supprimer POST
+ * Optionnel : supprimer POST
  * Car les moteurs sont fixes (seed)
  */
 // router.post('/', authenticate, authorize('ADMIN'), calendrierController.create);
 
 /**
- * ❌ Optionnel : empêcher suppression
+ * Optionnel : empêcher suppression
  * On ne veut pas supprimer GREGORIEN ou DIEGETIQUE
  */
 // router.delete('/:id_calendrier', authenticate, authorize('ADMIN'), calendrierController.delete);

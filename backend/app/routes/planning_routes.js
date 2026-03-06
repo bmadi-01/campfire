@@ -44,7 +44,6 @@ router.post('/:id_planning/calendar/advance', authenticate, requirePlanningAcces
     planningCalendarController.advanceTime
 );
 
-
 /**
  *   ROUTES PLANNING CLASSIQUES
  */

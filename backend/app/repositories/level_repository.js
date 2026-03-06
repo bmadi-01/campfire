@@ -47,7 +47,7 @@ exports.create = async ({ nom }) => {
 };
 
 /**
- * Supprime un niveau (⚠️ très rare)
+ * Supprime un niveau (très rare)
  */
 exports.delete = async (id_level) => {
     const result = await db.query(

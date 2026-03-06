@@ -35,7 +35,7 @@ exports.requireEventAccess = (mode = 'read') => {
                 });
             }
 
-            // 🔓 Lecture publique
+            // Lecture publique
             if (planning.public && mode === 'read') {
                 req.eventContext = {
                     id_evenement,
@@ -44,14 +44,14 @@ exports.requireEventAccess = (mode = 'read') => {
                 return next();
             }
 
-            // 🔒 Auth requise à partir d’ici
+            // Auth requise à partir d’ici
             if (!req.user) {
                 return res.status(401).json({
                     message: 'Authentification requise'
                 });
             }
 
-            // 🧍 ÉVÉNEMENT PERSONNEL
+            // ÉVÉNEMENT PERSONNEL
             if (planning.id_utilisateur) {
                 if (planning.id_utilisateur !== req.user.id) {
                     return res.status(403).json({
@@ -66,7 +66,7 @@ exports.requireEventAccess = (mode = 'read') => {
                 return next();
             }
 
-            // 👥 ÉVÉNEMENT DE GROUPE
+            // ÉVÉNEMENT DE GROUPE
             const id_identite = req.body.id_identite;
 
             if (!id_identite) {
@@ -103,7 +103,7 @@ exports.requireEventAccess = (mode = 'read') => {
                 });
             }
 
-            // ✏️ Modification réservée aux ORGANISATEURS
+            // Modification réservée aux ORGANISATEURS
             if (mode === 'write' && roleGroupe.level_nom !== 'ORGANISATEUR') {
                 return res.status(403).json({
                     message: 'Modification réservée aux organisateurs'

@@ -74,7 +74,7 @@ exports.getState = async (req, res) => {
 
 
 /**
- * ✏️ Modifier l’état courant
+ * Modifier l’état courant
  * PUT /plannings/:id_planning/calendar/state
  */
 exports.updateState = async (req, res) => {
@@ -102,7 +102,7 @@ exports.updateState = async (req, res) => {
 
 
 /**
- * ⏳ Avancer le temps du monde
+ * Avancer le temps du monde
  * POST /plannings/:id_planning/calendar/advance
  */
 exports.advanceTime = async (req, res) => {

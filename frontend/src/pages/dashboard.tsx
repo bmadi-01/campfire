@@ -54,7 +54,7 @@ function Dashboard() {
         }
     };
 
-    // 🔥 FETCH GROUPES ADAPTÉ À TON BACKEND
+    // FETCH GROUPES ADAPTÉ À TON BACKEND
     const fetchGroupes = async (token: string) => {
         try {
             const response = await fetch("http://localhost:4000/groupes", {

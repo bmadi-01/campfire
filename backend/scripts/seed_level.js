@@ -24,17 +24,17 @@ async function seedLevels() {
                     [level.nom]
                 );
 
-                console.log(`✅ Level créé : ${level.nom}`);
+                console.log(`\x1b[32mLevel créé : ${level.nom}\x1b[0m`);
             } else {
-                console.log(`ℹ️ Level déjà existant : ${level.nom}`);
+                console.log(`\x1b[34mLevel déjà existant : ${level.nom}\x1b[0m`);
             }
         }
 
-        console.log('🎉 Seed des levels terminé');
+        console.log('Seed des levels terminé');
         process.exit(0);
 
     } catch (error) {
-        console.error('❌ Erreur seed levels :', error.message);
+        console.error(`\x1b[31mErreur seed levels : ${error.message}\x1b[0m`);
         process.exit(1);
     }
 }
