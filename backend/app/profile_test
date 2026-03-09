@@ -45,3 +45,10 @@ TODO : profile 3
   "email": "madi@test.com",
   "mot_de_passe": "MotDePasse789!"
 }
+
+//code couleur dans les console
+
+console.log("\x1b[32mSuccès\x1b[0m");     // vert
+console.log("\x1b[33mAttention\x1b[0m");  // jaune
+console.log("\x1b[34mInfo\x1b[0m");       // bleu
+console.error("\x1b[31mErreur\x1b[0m");   // rouge
