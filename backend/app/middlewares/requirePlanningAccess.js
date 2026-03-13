@@ -1,3 +1,4 @@
+// backend/app/middlewares/requirePlanningAccess.js
 const planningRepository = require('../repositories/planning_repository');
 const possedeRepository = require('../repositories/possede_repository');
 const roleGroupeRepository = require('../repositories/role_groupe_repository');
@@ -39,7 +40,7 @@ exports.requirePlanningAccess = (mode = 'read') => {
             // Auth obligatoire à partir d’ici
             if (!req.user) {
                 return res.status(401).json({
-                    message: 'Authentification requise'
+                    message: 'Authentification requise pour la création de planning'
                 });
             }
 

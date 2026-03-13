@@ -1,3 +1,4 @@
+// backend/app/middlewares/requireEventAccess.js
 const evenementRepository = require('../repositories/evenement_repository');
 const planningRepository = require('../repositories/planning_repository');
 const possedeRepository = require('../repositories/possede_repository');
@@ -47,7 +48,7 @@ exports.requireEventAccess = (mode = 'read') => {
             // Auth requise à partir d’ici
             if (!req.user) {
                 return res.status(401).json({
-                    message: 'Authentification requise'
+                    message: 'Authentification requise pour la creation evenement'
                 });
             }
 

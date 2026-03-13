@@ -1,3 +1,4 @@
+// backend/app/middlewares/requireGroupOrganisateur.js
 /**
  * Middleware : vérifie que l'identité est ORGANISATEUR du groupe
  */

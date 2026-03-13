@@ -41,3 +41,41 @@ exports.authenticate = (req, res, next) => {
         });
     }
 };
+
+/**
+ * Middleware d'authentification JWT Optionnel
+ * Utile pour les routes qui peuvent être lues par le public OU des membres.
+ */
+exports.optionalAuthenticate = (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        // Pas de token ? On passe à la suite sans erreur
+        if (!authHeader) {
+            return next();
+        }
+
+        const [type, token] = authHeader.split(' ');
+
+        // Mauvais format ? On passe à la suite
+        if (type !== 'Bearer' || !token) {
+            return next();
+        }
+
+        const decoded = jwtUtils.verifyToken(token);
+
+        if (decoded.id) {
+            // Si le token est bon, on injecte l'utilisateur
+            req.user = {
+                id: decoded.id,
+                email: decoded.email,
+                role: decoded.role
+            };
+        }
+
+        next();
+    } catch (error) {
+        // Token invalide ou expiré, on le traite comme un visiteur non connecté
+        next();
+    }
+};

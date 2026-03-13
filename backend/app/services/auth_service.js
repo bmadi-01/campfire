@@ -15,7 +15,7 @@ exports.register = async (userData) => {
         mot_de_passe,
         ip_cgu,
         date_cgu,
-        cle_dfa = 123456
+        cle_dfa = null,
     } = userData;
 
     if (!mot_de_passe || !email || !prenom) {

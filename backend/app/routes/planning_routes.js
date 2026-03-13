@@ -4,7 +4,7 @@ const router = express.Router();
 const planningController = require('../controllers/planning_controller');
 const planningCalendarController = require('../controllers/planning_calendar_controller');
 
-const { authenticate } = require('../middlewares/auth_jwt_middleware');
+const { authenticate, optionalAuthenticate } = require('../middlewares/auth_jwt_middleware');
 const { requireGroupMember } = require('../middlewares/requireGroupMember');
 const {requirePlanningAccess} = require('../middlewares/requirePlanningAccess');
 

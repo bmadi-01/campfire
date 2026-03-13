@@ -1,3 +1,4 @@
+// backend/app/middlewares/authorizeRoles.js
 /**
  * Middleware d'autorisation par rôle global
  * @param {...string} allowedRoles rôles autorisés (ADMIN, USER, VISITOR)

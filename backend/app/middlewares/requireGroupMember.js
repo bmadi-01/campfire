@@ -1,3 +1,4 @@
+// backend/app/middlewares/requireGroupMember.js
 const roleGroupeRepository = require('../repositories/role_groupe_repository');
 const identiteRepository = require('../repositories/identite_repository');
 

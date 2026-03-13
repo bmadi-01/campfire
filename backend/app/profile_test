@@ -52,3 +52,7 @@ console.log("\x1b[32mSuccès\x1b[0m");     // vert
 console.log("\x1b[33mAttention\x1b[0m");  // jaune
 console.log("\x1b[34mInfo\x1b[0m");       // bleu
 console.error("\x1b[31mErreur\x1b[0m");   // rouge
+
+pour le calendrier grégorien j'ai le champ date_fin,
+alors ajouter un simple champ duree_minutes pour
+le calendrier diegetique
